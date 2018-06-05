@@ -31,7 +31,7 @@ public class TestResources {
 	}
 
 	private TestResources() {
-		File file = new File("e:/data/qsa");
+		File file = new File("c:/t/data/qsa");
 		if (!file.exists()) {
 			file = new File("data");
 		}

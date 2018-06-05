@@ -3,6 +3,8 @@ package embedding.measure;
 import algorithm.Biword;
 import algorithm.BiwordedStructure;
 import cath.Cath;
+import embedding.Vectorizer;
+import embedding.Vectorizers;
 import fragment.biword.BiwordId;
 import fragment.biword.BiwordPairFiles;
 import fragment.biword.BiwordPairReader;
@@ -15,6 +17,7 @@ import global.Parameters;
 import global.io.Directories;
 import grid.sparse.BufferOfLong;
 import java.util.Random;
+import metric.Chebyshev;
 import structure.Structures;
 import structure.StructuresId;
 import structure.VectorizationException;
@@ -27,125 +30,184 @@ import util.Timer;
  */
 public class TreeMeasurement {
 
-	private final TestResources resources = TestResources.getInstance();
-	private final Directories dirs = resources.getDirectoris();
-	private final Parameters parameters = resources.getParameters();
-	private final Random random = new Random(1);
-	private final Structures structures;
-	private final BiwordLoader biwordLoader;
-	private final Grid index;
+    private final TestResources resources = TestResources.getInstance();
+    private final Directories dirs = resources.getDirectoris();
+    private final Parameters parameters = resources.getParameters();
+    private final Random random = new Random(1);
+    private final Structures structures;
+    private final BiwordLoader biwordLoader;
+    private final Grid index;
 
-	public TreeMeasurement() {
-		dirs.createJob();
-		structures = createStructures();
-		Grids indexes = new Grids(parameters, dirs);
+    public TreeMeasurement() {
+        dirs.createJob();
+        structures = createStructures();
+        Grids indexes = new Grids(parameters, dirs);
 
-		index = indexes.getGrid(structures);
-		biwordLoader = new BiwordLoader(parameters, dirs, structures.getId());
+        index = indexes.getGrid(structures);
+        biwordLoader = new BiwordLoader(parameters, dirs, structures.getId());
 
-	}
+    }
 
-	private void run() throws VectorizationException {
-		int query = createRandomQuery();
-		BiwordedStructure queryBiwords = biwordLoader.load(query);
-		//efficient(queryBiwords);
-		allQcp(queryBiwords);
-	}
+    private void run() throws VectorizationException {
+        int query = createRandomQuery();
+        BiwordedStructure queryBiwords = biwordLoader.load(query);
+        Matches a, b, c;
+        //a = efficient(queryBiwords);
+        b = allQcp(queryBiwords);
+        c = vectors(queryBiwords);
+        //System.out.println("tree       " + a.size());
+        System.out.println("exhaustive " + b.size());
+        System.out.println("vectors    " + c.size());
+    }
 
-	private void efficient(BiwordedStructure queryBiwords) throws VectorizationException {
-		dirs.createTask("tree_test_");
+    private Matches efficient(BiwordedStructure queryBiwords) throws VectorizationException {
+        Matches matches = new Matches();
+        dirs.createTask("tree_test_");
+        BufferOfLong buffer = new BufferOfLong();
+        System.out.println("total: " + index.size());
+        Biword[] biwords = queryBiwords.getBiwords();
+        Timer.start();
+        BiwordPairWriter writer = new BiwordPairWriter(dirs, structures.size());
+        long sum = 0;
+        System.out.println("query size: " + biwords.length);
+        for (Biword x : sample(biwords)) {
+            buffer.clear();
+            index.query(x, buffer);
+            //System.out.println("returned: " + buffer.size());
+            sum += buffer.size();
+            for (int i = 0; i < buffer.size(); i++) {
+                long encoded = buffer.get(i);
+                BiwordId y = BiwordId.decode(encoded);
+                writer.write(x.getIdWithingStructure(), y.getStructureId(), y.getIdWithinStructure());
+            }
+        }
 
-		BufferOfLong buffer = new BufferOfLong();
-		System.out.println("total: " + index.size());
-		Biword[] biwords = queryBiwords.getBiwords();
-		Timer.start();
-		BiwordPairWriter writer = new BiwordPairWriter(dirs, structures.size());
-		long sum = 0;
-		System.out.println("query size: " + biwords.length);
-		for (Biword x : biwords) {
-			buffer.clear();
-			index.query(x, buffer);
-			System.out.println("returned: " + buffer.size());
-			sum += buffer.size();
-			for (int i = 0; i < buffer.size(); i++) {
-				long encoded = buffer.get(i);
-				BiwordId y = BiwordId.decode(encoded);
-				writer.write(x.getIdWithingStructure(), y.getStructureId(), y.getIdWithinStructure());
-			}
-		}
+        Timer.stop();
+        System.out.println("time: " + Timer.get() + " for " + biwords.length);
+        System.out.println("average size " + (sum / biwords.length));
 
-		Timer.stop();
-		System.out.println("time: " + Timer.get() + " for " + biwords.length);
-		System.out.println("average size " + (sum / biwords.length));
+        Timer.start();
 
-		Timer.start();
+        Superposer superposer = new Superposer();
+        long tp = 0;
+        BiwordPairFiles biwordPairFiles = new BiwordPairFiles(dirs);
+        for (BiwordPairReader reader : biwordPairFiles.getReaders()) {
+            int targetStructureId = reader.getTargetStructureId();
+            BiwordedStructure targetBiwords = biwordLoader.load(targetStructureId);
+            while (reader.readNextBiwordPair()) {
+                int queryBiwordId = reader.getQueryBiwordId();
+                int targetBiwordId = reader.getTargetBiwordId();
+                Biword x = queryBiwords.get(queryBiwordId);
+                Biword y = targetBiwords.get(targetBiwordId);
+                // TODO: filter by vectors
+                superposer.set(x.getPoints3d(), y.getPoints3d());
+                double rmsd = superposer.getRmsd();
+                if (rmsd <= parameters.getMaxFragmentRmsd()) {
+                    matches.add(new Match(x, y));
+                    tp++;
+                }
+            }
+        }
+        System.out.println("efficient  hit " + tp);
+        Timer.stop();
+        System.out.println("tp + fp = " + sum);
+        System.out.println("tp      = " + tp);
+        System.out.println("qcp " + Timer.get());
+        return matches;
+    }
 
-		Superposer superposer = new Superposer();
-		long tp = 0;
-		BiwordPairFiles biwordPairFiles = new BiwordPairFiles(dirs);
-		for (BiwordPairReader reader : biwordPairFiles.getReaders()) {
-			int targetStructureId = reader.getTargetStructureId();
-			BiwordedStructure targetBiwords = biwordLoader.load(targetStructureId);
-			while (reader.readNextBiwordPair()) {
-				int queryBiwordId = reader.getQueryBiwordId();
-				int targetBiwordId = reader.getTargetBiwordId();
+    private Matches allQcp(BiwordedStructure queryBiwords) {
+        Matches matches = new Matches();
+        dirs.createTask("linear_");
+        Biword[] biwords = queryBiwords.getBiwords();
+        Superposer superposer = new Superposer();
+        int hit = 0;
+        int total = 0;
+        Timer.start();
+        for (BiwordedStructure bs : biwordLoader) {
+            for (Biword x : sample(biwords)) {
+                for (Biword y : bs.getBiwords()) {
+                    superposer.set(x.getPoints3d(), y.getPoints3d());
+                    double rmsd = superposer.getRmsd();
+                    if (rmsd < parameters.getMaxFragmentRmsd()) {
+                        matches.add(new Match(x, y));
+                        hit++;
+                    }
+                    total++;
+                }
+            }
+        }
+        System.out.println("all hit " + hit);
+        Timer.stop();
+        System.out.println("hit = " + hit);
+        System.out.println("total = " + total);
+        System.out.println("time = " + Timer.get());
+        return matches;
+    }
 
-				Biword x = queryBiwords.get(queryBiwordId);
-				Biword y = targetBiwords.get(targetBiwordId);
-				// TODO: filter by vectors
-				superposer.set(x.getPoints3d(), y.getPoints3d());
-				double rmsd = superposer.getRmsd();
-				if (rmsd <= parameters.getMaxFragmentRmsd()) {
-					tp++;
-				}
-			}
-		}
-		Timer.stop();
-		System.out.println("tp + fp = " + sum);
-		System.out.println("tp      = " + tp);
-		System.out.println("qcp " + Timer.get());
-	}
+    private Matches vectors(BiwordedStructure queryBiwords) {
+        Matches matches = new Matches();
 
-	private void allQcp(BiwordedStructure queryBiwords) {
-		dirs.createTask("linear_");
-		Biword[] biwords = queryBiwords.getBiwords();
-		Superposer superposer = new Superposer();
-		int hit=0;
-		int total=0;
-		Timer.start();
-		for (Biword x : biwords) {
-			for (BiwordedStructure bs : biwordLoader) {
-				for (Biword y : bs.getBiwords()) {
-					/*superposer.set(x.getPoints3d(), y.getPoints3d());
-					double rmsd = superposer.getRmsd();
-					if (rmsd < parameters.getMaxFragmentRmsd()) {
-						hit++;
-					}*/
-					total++;
-				}				
-			}
-			System.out.println(hit);
-		}
-		Timer.stop();
-		System.out.println("hit = " + hit);
-		System.out.println("total = " + total);
-		System.out.println("time = " + Timer.get());
-	}
+        Vectorizers vectorizers = new Vectorizers(parameters, dirs);
+        Vectorizer vectorizer = vectorizers.get(structures.getId(), biwordLoader);
 
-	private Structures createStructures() {
-		Cath cath = resources.getCath();
-		Structures structures = new Structures(parameters, dirs, cath, new StructuresId("custom_search1"));
-		//structure.setFilter(new StructureSizeFilter(parameters.getMinResidues(), parameters.getMaxResidues()));
-		structures.addAll(cath.getHomologousSuperfamilies().getRepresentantSources());
-		return structures;
-	}
+        dirs.createTask("linear_");
+        Biword[] biwords = queryBiwords.getBiwords();
+        Superposer superposer = new Superposer();
+        int hit = 0;
+        int total = 0;
+        int vectorHit = 0;
+        Timer.start();
+        for (BiwordedStructure bs : biwordLoader) {
+            for (Biword x : sample(biwords)) {
+                for (Biword y : bs.getBiwords()) {
 
-	private int createRandomQuery() {
-		return random.nextInt(structures.size());
-	}
+                    float[] vx = vectorizer.getCoordinates(x.getCanonicalTuple());
+                    float[] vy = vectorizer.getCoordinates(y.getCanonicalTuple());
+                    double d = Chebyshev.distance(vx, vy);
+                    if (d <= parameters.getMaxFragmentRmsd()) {
+                        superposer.set(x.getPoints3d(), y.getPoints3d());
+                        double rmsd = superposer.getRmsd();
+						vectorHit++;
+                        if (rmsd < parameters.getMaxFragmentRmsd()) {
+                            matches.add(new Match(x, y));
+                            hit++;
+                        }
+                    }
+                    total++;
+                }
+            }
+        }
+        System.out.println("all hit " + hit);
+        Timer.stop();
+        System.out.println("vectorHit = " + vectorHit);
+        System.out.println("hit = " + hit);
+        System.out.println("total = " + total);
+        System.out.println("time = " + Timer.get());
+        return matches;
+    }
 
-	public static void main(String[] args) throws Exception {
-		TreeMeasurement m = new TreeMeasurement();
-		m.run();
-	}
+    private Structures createStructures() {
+        Cath cath = resources.getCath();
+        Structures structures = new Structures(
+                parameters, dirs, cath, new StructuresId("custom_search1"));
+        //structure.setFilter(new StructureSizeFilter(parameters.getMinResidues(), parameters.getMaxResidues()));
+        structures.addAll(cath.getHomologousSuperfamilies().getRepresentantSources());
+        return structures;
+    }
+
+    private int createRandomQuery() {
+        return random.nextInt(structures.size());
+    }
+
+    private Biword[] sample(Biword[] biwords) {
+        Biword[] sample = new Biword[1];
+        sample[0] = biwords[10];
+        return sample;
+    }
+
+    public static void main(String[] args) throws Exception {
+        TreeMeasurement m = new TreeMeasurement();
+        m.run();
+    }
 }

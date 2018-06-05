@@ -20,8 +20,8 @@ import java.util.Map;
  * The purpose of this class is to provide Map-like data structure in case total size of all entries is too big to be
  * held in memory.
  *
- * All values are serialized. All keys are in memory. Additionally, the whole class can be serialized and deserialized
- * using its methods.
+ * All values are serialized only. All keys are in memory. Additionally, the whole class can be serialized and
+ * deserialized using its methods.
  *
  * Auxiliary small data are serialized by Java, values by Kryo for efficiency.
  *
@@ -31,6 +31,8 @@ import java.util.Map;
  */
 public class SerializedMap<K extends Serializable, V extends Serializable> implements Serializable {
 
+	// TODO use for biwords and biword hits
+	
 	private final Class<V> valueClass;
 	private final Map<Integer, K> indexToKey;
 	private final Map<K, Integer> keyToIndex;
@@ -38,6 +40,12 @@ public class SerializedMap<K extends Serializable, V extends Serializable> imple
 	private transient File dir;
 	private transient Kryo kryo;
 
+	/**
+	 * @param dir Directory where all data are be stored.
+	 * @param itemsPerDir Maximum number of object files in directory. Total number of files and directories within a
+	 * single directory can be up to 2 * itemsPerDir + 1
+	 * @param valueClass Class of the value V type (e.g., String.class).
+	 */
 	public SerializedMap(File dir, int itemsPerDir, Class<V> valueClass) {
 		this.dir = dir;
 		if (dir.exists()) {

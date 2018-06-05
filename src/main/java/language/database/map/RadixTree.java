@@ -15,7 +15,7 @@ import java.util.Map;
 public class RadixTree implements Serializable {
 
 	private int size;
-	private int itemsPerNode;
+	private int itemsPerNode; // radix
 	private Map<Integer, TreePath> paths;
 
 	public RadixTree() {
