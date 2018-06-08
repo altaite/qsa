@@ -6,12 +6,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 import embedding.lipschitz.object.PointTupleDistanceMeasurement;
+import java.io.Serializable;
 
 /**
  *
  * @author Antonin Pavelka
  */
-public class ObjectPairs implements Iterable<ObjectPair> {
+public class ObjectPairs implements Iterable<ObjectPair>, Serializable {
 
 	private ObjectPair[] samples;
 	private Random random = new Random(1);

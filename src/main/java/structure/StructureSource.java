@@ -1,6 +1,7 @@
 package structure;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  *
@@ -9,7 +10,7 @@ import java.io.File;
  * Points to a source of macromolecular structure - a file or PDB web service.
  *
  */
-public class StructureSource {
+public class StructureSource implements Serializable {
 
 	public static final int FILE = 1;
 	public static final int PDB_CODE = 2;

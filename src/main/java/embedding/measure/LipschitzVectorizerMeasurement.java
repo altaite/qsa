@@ -24,8 +24,8 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import structure.SimpleStructure;
 import structure.StructureSource;
-import structure.Structures;
-import structure.StructuresId;
+import structure.set.Structures;
+import structure.set.StructuresId;
 import structure.VectorizationException;
 import testing.TestResources;
 import vectorization.dimension.DimensionOpen;
@@ -161,7 +161,7 @@ public class LipschitzVectorizerMeasurement {
 			cath,
 			new StructuresId("clustering"));
 		List<StructureSource> sources = cath.getHomologousSuperfamilies().getRepresentantSources();
-		structures.addAll(sources);
+		structures.getAdder().addAll(sources);
 		for (SimpleStructure structure : structures) {
 			try {
 				System.out.println(counter);

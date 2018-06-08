@@ -1,4 +1,4 @@
-package structure;
+package structure.set;
 
 import language.StringId;
 

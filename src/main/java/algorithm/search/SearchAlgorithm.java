@@ -33,7 +33,7 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import structure.SimpleStructure;
-import structure.Structures;
+import structure.set.Structures;
 import structure.VectorizationException;
 import util.FlexibleLogger;
 import util.Time;

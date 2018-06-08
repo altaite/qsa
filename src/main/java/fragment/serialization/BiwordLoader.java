@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import structure.StructuresId;
+import structure.set.StructuresId;
 
 /**
  *
@@ -23,6 +23,7 @@ import structure.StructuresId;
  *
  * @author Antonin Pavelka
  */
+@Deprecated
 public class BiwordLoader implements Iterable<BiwordedStructure> {
 
 	private final Parameters parameters;

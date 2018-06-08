@@ -3,7 +3,7 @@ package cath;
 import java.util.HashMap;
 import java.util.Map;
 import structure.StructureSource;
-import structure.Structures;
+import structure.set.Structures;
 
 /**
  *

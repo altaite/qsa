@@ -12,11 +12,11 @@ import java.io.File;
 import output.OutputVisualization;
 import output.OutputTable;
 import structure.StructureSizeFilter;
-import structure.Structures;
+import structure.set.Structures;
 import cath.Cath;
 import structure.SimpleStructure;
 import structure.StructureFactory;
-import structure.StructuresId;
+import structure.set.StructuresId;
 import util.Time;
 
 /**
@@ -100,7 +100,7 @@ public class SearchJob {
 
 	private Structures createQueryStructures() {
 		Structures queryStructures = new Structures(parameters, dirs, cath, new StructuresId("query"));
-		queryStructures.addFromIds(dirs.getQueryCodes());
+		queryStructures.getAdder().addFromIds(dirs.getQueryCodes());
 		return queryStructures;
 	}
 
@@ -109,15 +109,14 @@ public class SearchJob {
 		targetStructures.setFilter(new StructureSizeFilter(parameters.getMinResidues(), parameters.getMaxResidues()));
 		if (dirs.getCustomTargets().exists()) {
 			System.out.println("Searching in user specified database " + dirs.getCustomTargets());
-			targetStructures.addFromIds(dirs.getCustomTargets());
+			targetStructures.getAdder().addFromIds(dirs.getCustomTargets());
 		} else {
-			targetStructures.addAll(cath.getHomologousSuperfamilies().getRepresentantSources());
+			targetStructures.getAdder().addAll(cath.getHomologousSuperfamilies().getRepresentantSources());
 			System.out.println("Searching in " + targetStructures.size()
 				+ " CATH homologous superfamilies representatives");
 		}
 		targetStructures.setMaxSize(parameters.getMaxDbSize());
 		System.out.println("Database size limited to " + parameters.getMaxDbSize());
-		targetStructures.shuffle();
 		return targetStructures;
 	}
 

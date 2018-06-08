@@ -8,11 +8,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import global.Parameters;
-import structure.StructuresId;
+import structure.set.StructuresId;
 
 /**
  * @author Antonin Pavelka
  */
+@Deprecated
 public class BiwordSaver {
 
 	private final Parameters parameters;

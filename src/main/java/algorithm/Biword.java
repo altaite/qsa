@@ -22,6 +22,7 @@ public class Biword implements AlternativePointTuples {
 	private int structureId;
 	private Word firstWord;
 	private Word secondWord;
+	private float[] vector;
 
 	/**
 	 * For Kryo.
@@ -164,5 +165,13 @@ public class Biword implements AlternativePointTuples {
 		}
 		return b;
 	}
-	
+
+	public float[] getVector() {
+		return vector;
+	}
+
+	public void setVector(float[] vector) {
+		this.vector = vector;
+	}
+
 }

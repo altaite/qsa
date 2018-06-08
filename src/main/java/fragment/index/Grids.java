@@ -12,8 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import structure.Structures;
-import structure.StructuresId;
+import structure.set.Structures;
+import structure.set.StructuresId;
 
 /**
  *

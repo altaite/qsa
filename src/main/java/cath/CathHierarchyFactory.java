@@ -4,8 +4,8 @@ import global.Parameters;
 import global.io.Directories;
 import java.util.List;
 import structure.StructureSource;
-import structure.Structures;
-import structure.StructuresId;
+import structure.set.Structures;
+import structure.set.StructuresId;
 
 /**
  *
@@ -42,7 +42,7 @@ public class CathHierarchyFactory {
 	private Structures createRootStructures() {
 		List<StructureSource> rootSources = level.getRepresentantSources();
 		Structures root = new Structures(parameters, dirs, cath, new StructuresId("hierarchy_root"));
-		root.addAll(rootSources);
+		root.getAdder().addAll(rootSources);
 		System.out.println(root.getFailed() + " root CATH domains failed to parse, successfull " + root.size());
 		return root;
 	}
@@ -50,7 +50,7 @@ public class CathHierarchyFactory {
 	private Structures createChildren(Group group) {
 		Structures structures = new Structures(parameters, dirs, cath,
 			new StructuresId(group.getClassification() + "_child"));
-		structures.addAll(group.getMemberSources());
+		structures.getAdder().addAll(group.getMemberSources());
 		System.out.println(structures.getFailed() + " CATH " + group.getClassification() + " domains failed to parse, "
 			+ "successfull " + structures.size()
 		);

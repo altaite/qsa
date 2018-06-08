@@ -3,6 +3,7 @@ package embedding.lipschitz;
 import embedding.lipschitz.object.AlternativeMode;
 import embedding.lipschitz.object.AlternativePointTuples;
 import embedding.lipschitz.object.PointTupleDistanceMeasurement;
+import java.io.Serializable;
 
 /**
  *
@@ -13,7 +14,7 @@ import embedding.lipschitz.object.PointTupleDistanceMeasurement;
  *
  *
  */
-public class ObjectPair {
+public class ObjectPair implements Serializable {
 
 	private AlternativePointTuples a;
 	private AlternativePointTuples b;

@@ -10,8 +10,8 @@ import fragment.serialization.BiwordLoader;
 import global.FlexibleLogger;
 import global.Parameters;
 import global.io.Directories;
-import structure.Structures;
-import structure.StructuresId;
+import structure.set.Structures;
+import structure.set.StructuresId;
 import util.Time;
 import util.Timer;
 

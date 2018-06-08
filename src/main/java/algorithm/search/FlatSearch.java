@@ -6,7 +6,7 @@ import fragment.index.Grids;
 import global.Parameters;
 import global.io.Directories;
 import structure.SimpleStructure;
-import structure.Structures;
+import structure.set.Structures;
 import cath.Cath;
 import util.Time;
 
@@ -30,10 +30,10 @@ public class FlatSearch implements Search {
 
 	@Override
 	public Alignments run() {
-		Grids indexes = new Grids(parameters, dirs);
+		Grids grids = new Grids(parameters, dirs);
 		dirs.createTask("task_" + query.getSource());
 		Time.start("init");
-		Grid index = indexes.getGrid(targets);
+		Grid index = grids.getGrid(targets);
 		System.out.println("Biword index created.");
 		Time.stop("init");
 		SearchAlgorithm baa = new SearchAlgorithm(parameters, dirs, query, targets, index);

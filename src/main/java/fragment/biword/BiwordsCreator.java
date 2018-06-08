@@ -8,7 +8,7 @@ import global.io.Directories;
 import java.io.IOException;
 import java.util.Iterator;
 import structure.SimpleStructure;
-import structure.Structures;
+import structure.set.Structures;
 
 /**
  *

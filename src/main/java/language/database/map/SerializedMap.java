@@ -13,7 +13,9 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -29,10 +31,10 @@ import java.util.Map;
  * @param <K> Key type. Must implement Serializable.
  * @param <V> Value type. Must provide empty public constructor (for Kryo).
  */
-public class SerializedMap<K extends Serializable, V extends Serializable> implements Serializable {
+public class SerializedMap<K extends Serializable, V extends Serializable>
+	implements Serializable, Iterable<V> {
 
 	// TODO use for biwords and biword hits
-	
 	private final Class<V> valueClass;
 	private final Map<Integer, K> indexToKey;
 	private final Map<K, Integer> keyToIndex;
@@ -81,11 +83,6 @@ public class SerializedMap<K extends Serializable, V extends Serializable> imple
 		}
 	}
 
-	private static File getFile(File dir) {
-		File file = dir.toPath().resolve("map.obj").toFile();
-		return file;
-	}
-
 	public void put(K key, V value) {
 		TreePath treePath = radixTree.addPath();
 		int index = treePath.getLeafId();
@@ -113,6 +110,11 @@ public class SerializedMap<K extends Serializable, V extends Serializable> imple
 		return getByKey(indexToKey(index));
 	}
 
+	private static File getFile(File dir) {
+		File file = dir.toPath().resolve("map.obj").toFile();
+		return file;
+	}
+
 	private void serializeValue(Path path, V value) {
 		createDirs(path.getParent());
 		try (Output output = new Output(new FileOutputStream(path.toFile()))) {
@@ -136,6 +138,15 @@ public class SerializedMap<K extends Serializable, V extends Serializable> imple
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public Set<K> keys() {
+		return keyToIndex.keySet();
+	}
+
+	@Override
+	public Iterator<V> iterator() {
+		return new SerializedMapValuesIterator(this);
 	}
 
 	public static void main(String[] args) {

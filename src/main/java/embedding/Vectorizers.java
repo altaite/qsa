@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import probability.sampling.ReservoirSample;
-import structure.StructuresId;
+import structure.set.StructuresId;
 
 /**
  *

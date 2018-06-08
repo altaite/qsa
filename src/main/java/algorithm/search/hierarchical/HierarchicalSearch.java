@@ -15,7 +15,7 @@ import output.OutputVisualization;
 import structure.SimpleStructure;
 import structure.StructureFactory;
 import structure.StructureSource;
-import structure.Structures;
+import structure.set.Structures;
 
 /**
  *
