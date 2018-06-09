@@ -40,12 +40,12 @@ public class ReservoirSample<T> implements Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		check();
+		//check();
 		return sample.iterator();
 	}
 
 	public List<T> getList() {
-		check();
+		//check();
 		return sample;
 	}
 
@@ -56,12 +56,12 @@ public class ReservoirSample<T> implements Iterable<T> {
 	}
 
 	public int size() {
-		return howMany;
+		return sample.size();
 	}
 
 	public static void main(String[] args) {
 		int howMany = 10;
-		long outOf = 100;
+		long outOf = 5;
 		int cycles = 10000000;
 		long[] counts = new long[(int) outOf];
 

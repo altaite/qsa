@@ -59,10 +59,8 @@ public class Vectorizers {
 			}
 		}
 		BiwordAlternativeMode mode = new BiwordAlternativeMode(true, false); // !!! TODO parameters
-
 		Biword[] sampleArray = new Biword[sample.size()];
 		sample.getList().toArray(sampleArray);
-
 		LipschitzEmbedding embedding = new LipschitzEmbedding(
 			sampleArray,
 			parameters.getNumberOfDimensions(),
