@@ -38,4 +38,8 @@ public class BiwordId {
 		return structureId == other.structureId
 			&& idWithinStructure == other.idWithinStructure;
 	}
+
+	public String toString() {
+		return structureId + ":" + idWithinStructure;
+	}
 }

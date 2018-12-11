@@ -23,7 +23,6 @@ public class Directories {
 
 	private File job;
 	private File task;
-	private File structures;
 	private final File home;
 
 	public Directories(File home) {

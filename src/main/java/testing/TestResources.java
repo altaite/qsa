@@ -31,9 +31,10 @@ public class TestResources {
 	}
 
 	private TestResources() {
-		File file = new File("c:/t/data/qsa");
+		File file = new File("d:/t/data/qsa-test");
 		if (!file.exists()) {
 			file = new File("data");
+			System.out.println("Warning: the home directory does not exist, using local " + file);
 		}
 		System.out.println("Using test directory " + file.getAbsolutePath());
 		directories = new Directories(file);

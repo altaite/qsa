@@ -17,12 +17,14 @@ import geometry.superposition.Superposer;
 import global.Parameters;
 import global.io.Directories;
 import grid.sparse.BufferOfLong;
+import java.io.File;
+import java.util.List;
 import java.util.Random;
 import metric.Chebyshev;
+import structure.StructureSource;
 import structure.set.Structures;
 import structure.set.StructuresId;
 import structure.VectorizationException;
-import testing.TestResources;
 import util.Timer;
 
 /**
@@ -31,37 +33,44 @@ import util.Timer;
  */
 public class TreeMeasurement {
 
-	private final TestResources resources = TestResources.getInstance();
-	private final Directories dirs = resources.getDirectoris();
-	private final Parameters parameters = resources.getParameters();
-	private final Random random = new Random(1);
+	//private final TestResources resources;
+	private final Directories dirs;
+	private final Parameters parameters;
+	Cath cath;
+	private final Random random;
 	private final Structures structures;
 	private final BiwordedStructures biwordedStructures;
 	private final BiwordLoader biwordLoader;
 	private final Grid index;
 
 	public TreeMeasurement() {
+		random = new Random(1);
+		dirs = new Directories(new File("d:/t/data/qsa"));
+		parameters = Parameters.create(dirs.getParameters());
+		cath = new Cath(dirs);
 		dirs.createJob();
 		structures = createStructures();
 		biwordedStructures = new BiwordedStructures(structures,
 			dirs.getBiwordedStructuresDir(structures.getId()).toFile(), 100);
 		Grids indexes = new Grids(parameters, dirs);
 
-		index = null;
-		//index = indexes.getGrid(structures); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//index = null;
+		index = indexes.getGrid(structures); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		biwordLoader = new BiwordLoader(parameters, dirs, structures.getId());
+		System.out.println("------------------");
 
+		// TODO no dirs, initialize?
 	}
 
 	private void run() throws VectorizationException {
 		int query = createRandomQuery();
 		BiwordedStructure queryBiwords = biwordLoader.load(query);
 		Matches a, b, c;
-		//a = efficient(queryBiwords);
-		//b = allQcp(queryBiwords);
+		a = efficient(queryBiwords);
+		b = allQcp(queryBiwords);
 		c = vectors(queryBiwords);
-		//System.out.println("tree       " + a.size());
-		//System.out.println("exhaustive " + b.size());
+		System.out.println("tree       " + a.size());
+		System.out.println("exhaustive " + b.size());
 		System.out.println("vectors    " + c.size());
 	}
 
@@ -78,7 +87,6 @@ public class TreeMeasurement {
 		for (Biword x : sample(biwords)) {
 			buffer.clear();
 			index.query(x, buffer);
-			//System.out.println("returned: " + buffer.size());
 			sum += buffer.size();
 			for (int i = 0; i < buffer.size(); i++) {
 				long encoded = buffer.get(i);
@@ -86,7 +94,9 @@ public class TreeMeasurement {
 				writer.write(x.getIdWithingStructure(), y.getStructureId(), y.getIdWithinStructure());
 			}
 		}
-
+		writer.close();
+		
+		//check identities if they are returned? maybe even content and vectors
 		Timer.stop();
 		System.out.println("time: " + Timer.get() + " for " + biwords.length);
 		System.out.println("average size " + (sum / biwords.length));
@@ -198,12 +208,23 @@ public class TreeMeasurement {
 	}
 
 	private Structures createStructures() {
-		Cath cath = resources.getCath();
+
 		Structures structures = new Structures(
 			parameters, dirs, cath, new StructuresId("custom_search1"));
 		//structure.setFilter(new StructureSizeFilter(parameters.getMinResidues(), parameters.getMaxResidues()));
-		structures.getAdder().addAll(cath.getHomologousSuperfamilies().getRepresentantSources());
+		List<StructureSource> list = cath.getHomologousSuperfamilies().getRepresentantSources();
+		System.out.println("total structures before sampling " + list.size());
+		sample(list, 100);
+		System.out.println("total structures after sampling " + list.size());
+		structures.getAdder().addAll(list);
 		return structures;
+	}
+
+	private void sample(List<StructureSource> list, int n) {
+		while (list.size() > n) {
+			int r = random.nextInt(list.size());
+			list.remove(r);
+		}
 	}
 
 	private int createRandomQuery() {
