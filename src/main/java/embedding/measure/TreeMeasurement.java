@@ -3,7 +3,6 @@ package embedding.measure;
 import algorithm.Biword;
 import algorithm.BiwordedStructure;
 import cath.Cath;
-import database.BiwordedStructures;
 import embedding.Vectorizer;
 import embedding.Vectorizers;
 import fragment.biword.BiwordId;
@@ -39,7 +38,6 @@ public class TreeMeasurement {
 	Cath cath;
 	private final Random random;
 	private final Structures structures;
-	private final BiwordedStructures biwordedStructures;
 	private final BiwordLoader biwordLoader;
 	private final Grid index;
 
@@ -50,8 +48,6 @@ public class TreeMeasurement {
 		cath = new Cath(dirs);
 		dirs.createJob();
 		structures = createStructures();
-		biwordedStructures = new BiwordedStructures(structures,
-			dirs.getBiwordedStructuresDir(structures.getId()).toFile(), 100);
 		Grids indexes = new Grids(parameters, dirs);
 
 		//index = null;
@@ -68,13 +64,14 @@ public class TreeMeasurement {
 		Matches a, b, c;
 		a = efficient(queryBiwords);
 		b = allQcp(queryBiwords);
-		c = vectors(queryBiwords);
+		//c = vectors(queryBiwords);
 		System.out.println("tree       " + a.size());
 		System.out.println("exhaustive " + b.size());
-		System.out.println("vectors    " + c.size());
+		//System.out.println("vectors    " + c.size());
 	}
 
 	private Matches efficient(BiwordedStructure queryBiwords) throws VectorizationException {
+		System.out.println("--- EFFICIENT ---");
 		Matches matches = new Matches();
 		dirs.createTask("tree_test_");
 		BufferOfLong buffer = new BufferOfLong();
@@ -84,7 +81,8 @@ public class TreeMeasurement {
 		BiwordPairWriter writer = new BiwordPairWriter(dirs, structures.size());
 		long sum = 0;
 		System.out.println("query size: " + biwords.length);
-		for (Biword x : sample(biwords)) {
+		Biword[] queries = sample(biwords);
+		for (Biword x : queries) {
 			buffer.clear();
 			index.query(x, buffer);
 			sum += buffer.size();
@@ -95,16 +93,18 @@ public class TreeMeasurement {
 			}
 		}
 		writer.close();
-		
+
 		//check identities if they are returned? maybe even content and vectors
 		Timer.stop();
-		System.out.println("time: " + Timer.get() + " for " + biwords.length);
+		System.out.println("total tree query size " + sum);
+		System.out.println("linear comparison size: " + (queries.length * index.size()));
+		System.out.println("time1: " + Timer.get() + " for " + biwords.length);
 		System.out.println("average size " + (sum / biwords.length));
 
 		Timer.start();
-
 		Superposer superposer = new Superposer();
 		long tp = 0;
+		long qcp = 0;
 		BiwordPairFiles biwordPairFiles = new BiwordPairFiles(dirs);
 		for (BiwordPairReader reader : biwordPairFiles.getReaders()) {
 			int targetStructureId = reader.getTargetStructureId();
@@ -114,24 +114,27 @@ public class TreeMeasurement {
 				int targetBiwordId = reader.getTargetBiwordId();
 				Biword x = queryBiwords.get(queryBiwordId);
 				Biword y = targetBiwords.get(targetBiwordId);
-				// TODO: filter by vectors
 				superposer.set(x.getPoints3d(), y.getPoints3d());
 				double rmsd = superposer.getRmsd();
+				qcp++;
 				if (rmsd <= parameters.getMaxFragmentRmsd()) {
-					matches.add(new Match(x, y));
+					//matches.add(new Match(x, y));
 					tp++;
 				}
 			}
 		}
+		System.out.println("QCP comparisons: " + qcp);
 		System.out.println("efficient  hit " + tp);
 		Timer.stop();
 		System.out.println("tp + fp = " + sum);
 		System.out.println("tp      = " + tp);
-		System.out.println("qcp " + Timer.get());
+		System.out.println("time2 " + Timer.get());
+		System.out.println();
 		return matches;
 	}
 
 	private Matches allQcp(BiwordedStructure queryBiwords) {
+		System.out.println("--- QCP ---");
 		Matches matches = new Matches();
 		dirs.createTask("linear_");
 		Biword[] biwords = queryBiwords.getBiwords();
@@ -145,7 +148,7 @@ public class TreeMeasurement {
 					superposer.set(x.getPoints3d(), y.getPoints3d());
 					double rmsd = superposer.getRmsd();
 					if (rmsd < parameters.getMaxFragmentRmsd()) {
-						matches.add(new Match(x, y));
+						//matches.add(new Match(x, y));
 						hit++;
 					}
 					total++;
@@ -157,10 +160,12 @@ public class TreeMeasurement {
 		System.out.println("hit = " + hit);
 		System.out.println("total = " + total);
 		System.out.println("time = " + Timer.get());
+		System.out.println();
 		return matches;
 	}
 
 	private Matches vectors(BiwordedStructure queryBiwords) {
+		System.out.println("--- VECTORS ---");
 		Matches matches = new Matches();
 
 		Vectorizers vectorizers = new Vectorizers(parameters, dirs);
@@ -204,17 +209,17 @@ public class TreeMeasurement {
 		System.out.println("hit = " + hit);
 		System.out.println("total = " + total);
 		System.out.println("time = " + Timer.get());
+		System.out.println();
 		return matches;
 	}
 
 	private Structures createStructures() {
-
 		Structures structures = new Structures(
 			parameters, dirs, cath, new StructuresId("custom_search1"));
 		//structure.setFilter(new StructureSizeFilter(parameters.getMinResidues(), parameters.getMaxResidues()));
 		List<StructureSource> list = cath.getHomologousSuperfamilies().getRepresentantSources();
 		System.out.println("total structures before sampling " + list.size());
-		sample(list, 100);
+		// sample(list, 1000);
 		System.out.println("total structures after sampling " + list.size());
 		structures.getAdder().addAll(list);
 		return structures;
@@ -227,14 +232,23 @@ public class TreeMeasurement {
 		}
 	}
 
+	/*
+	TODO decrease memory to check we are not on the edge
+	consider inmem saving - 2 * ~10 = 20 GB, but only if it will be overall bottleneck
+	hierarchy of proteins used in Lipschitz
+	*/
+	
 	private int createRandomQuery() {
+		random.nextInt(structures.size());
+		random.nextInt(structures.size());
 		return random.nextInt(structures.size());
 	}
 
 	private Biword[] sample(Biword[] biwords) {
 		Biword[] sample = new Biword[1];
 		sample[0] = biwords[10];
-		return sample;
+		return biwords; // !!!
+		//return sample;
 	}
 
 	public static void main(String[] args) throws Exception {

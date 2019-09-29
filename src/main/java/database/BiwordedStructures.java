@@ -9,8 +9,11 @@ import structure.set.Structures;
 
 /**
  *
+ * DELETE?
+ * 
  * @author Antonin Pavelka
  */
+@Deprecated
 public class BiwordedStructures implements Iterable<BiwordedStructure> {
 
 	private SerializedMap<StructureSource, BiwordedStructure> map;
@@ -35,8 +38,7 @@ public class BiwordedStructures implements Iterable<BiwordedStructure> {
 
 	private void create(Structures structures) {
 		for (StructureSource source : structures.getSources()) {
-			
-			
+
 		}
 	}
 }

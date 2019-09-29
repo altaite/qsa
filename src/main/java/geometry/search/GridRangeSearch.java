@@ -62,23 +62,29 @@ public class GridRangeSearch<T extends Coordinates> {
 		double sq_r = r * r;
 		double[] low = {q.getCoords()[0] - r, q.getCoords()[1] - r, q.getCoords()[2] - r};
 		double[] high = {q.getCoords()[0] + r, q.getCoords()[1] + r, q.getCoords()[2] + r};
-		int[] lo = {index(origin[0], low[0]), index(origin[1], low[1]), index(origin[2], low[2])};
-		int[] hi = {index(origin[0], high[0]), index(origin[1], high[1]), index(origin[2], high[2])};
-		for (int i = 0; i < 3; i++) {
-			lo[i] = Math.max(0, lo[i]);
-		}
-		hi[0] = Math.min(cells.length - 1, hi[0]);
-		hi[1] = Math.min(cells[0].length - 1, hi[1]);
-		hi[2] = Math.min(cells[0][0].length - 1, hi[2]);
-		for (int x = lo[0]; x <= hi[0]; x++) {
-			for (int y = lo[1]; y <= hi[1]; y++) {
-				for (int z = lo[2]; z <= hi[2]; z++) {
+		//int[] lo = {index(origin[0], low[0]), index(origin[1], low[1]), index(origin[2], low[2])};
+		int lo0 = index(origin[0], low[0]);
+		int lo1 = index(origin[1], low[1]);
+		int lo2 = index(origin[2], low[2]);
+		int hi0 = index(origin[0], high[0]);
+		int hi1 = index(origin[1], high[1]);
+		int hi2 = index(origin[2], high[2]);
+		//int[] hi = {index(origin[0], high[0]), index(origin[1], high[1]), index(origin[2], high[2])};
+		lo0 = Math.max(0, lo0);
+		lo1 = Math.max(0, lo1);
+		lo2 = Math.max(0, lo2);
+		hi0 = Math.min(cells.length - 1, hi0);
+		hi1 = Math.min(cells[0].length - 1, hi1);
+		hi2 = Math.min(cells[0][0].length - 1, hi2);
+		double[] a = q.getCoords();
+		for (int x = lo0; x <= hi0; x++) {
+			for (int y = lo1; y <= hi1; y++) {
+				for (int z = lo2; z <= hi2; z++) {
 					Bucket bucket = cells[x][y][z];
 					if (bucket != null) {
 						for (Object o : bucket) {
 							T t = (T) o;
 							double sq_d = 0;
-							double[] a = q.getCoords();
 							double[] b = t.getCoords();
 							for (int i = 0; i < 3; i++) {
 								double diff = a[i] - b[i];

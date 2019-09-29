@@ -257,7 +257,6 @@ public class Directories {
 		return dir.resolve(Integer.toString(structureId)).toFile();
 	}
 
-	@Deprecated
 	public Path getBiwordsDir(StructuresId structureSetId) {
 		Path p = getHome().toPath().resolve("biwords");
 		createDirs(p);
@@ -367,6 +366,11 @@ public class Directories {
 	public File getQueryCodes() {
 		return FileOperations.safeSubfile(getHome(), "query_codes.txt");
 	}
+	
+	public File getTestCodes() {
+		return FileOperations.safeSubfile(getHome(), "test_codes.txt");
+	}
+
 
 	public File getTemp() {
 		return FileOperations.safeSub(getTask(), "temp");

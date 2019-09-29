@@ -14,6 +14,7 @@ import structure.set.Structures;
  *
  * @author Antonin Pavelka
  */
+@Deprecated
 public class BiwordsCreator implements Iterable<BiwordedStructure> {
 
 	private final Parameters parameters;

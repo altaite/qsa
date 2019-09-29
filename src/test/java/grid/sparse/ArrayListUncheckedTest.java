@@ -15,11 +15,11 @@ import junit.framework.TestCase;
  *
  * @author kepler
  */
-public class BufferTest extends TestCase {
+public class ArrayListUncheckedTest extends TestCase {
 
 	private Random random = new Random(1);
 
-	public BufferTest(String testName) {
+	public ArrayListUncheckedTest(String testName) {
 		super(testName);
 	}
 

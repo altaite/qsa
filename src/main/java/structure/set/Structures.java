@@ -20,7 +20,10 @@ import structure.StructureSource;
  * @author Antonin Pavelka
  */
 public class Structures implements Iterable<SimpleStructure> {
-
+// TODO structure database, compute, store, manage ids
+// separate from biwords?
+// compute both at the same time? yes, speed
+// utilize map or list, single file?
 	private final Parameters parameters;
 	private final Directories dirs;
 	private final StructuresId id;
@@ -67,7 +70,7 @@ public class Structures implements Iterable<SimpleStructure> {
 		this.max = max;
 	}
 
-	public SimpleStructure get(int index, int structureId) throws IOException, StructureParsingException {
+	private SimpleStructure get(int index, int structureId) throws IOException, StructureParsingException {
 		StructureSource ref = structureSources.getSource(index);
 		SimpleStructure ss = factory.getStructure(structureId, ref);
 		return ss;

@@ -3,6 +3,7 @@ package fragment.index;
 import fragment.serialization.BiwordSaver;
 import algorithm.Biword;
 import algorithm.BiwordedStructure;
+import algorithm.BiwordsFactory;
 import embedding.Vectorizer;
 import embedding.Vectorizers;
 import fragment.biword.BiwordsCreator;
@@ -10,6 +11,10 @@ import fragment.serialization.BiwordLoader;
 import global.FlexibleLogger;
 import global.Parameters;
 import global.io.Directories;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+import structure.StructureSource;
 import structure.set.Structures;
 import structure.set.StructuresId;
 import util.Time;
@@ -64,11 +69,13 @@ public class GridFactory {
 		createIndex();
 	}
 
+	// use map with hierarchical dirs
+	// remember progress and start where ended, ignore fails 
 	private void createAndSaveBiwords(Structures structures) {
 		Timer.start();
-		BiwordsCreator biwordsProvider = new BiwordsCreator(parameters, dirs, structures, false);
+		BiwordsCreator biwordsCreator = new BiwordsCreator(parameters, dirs, structures, false);
 		BiwordSaver biwordSaver = new BiwordSaver(parameters, dirs);
-		for (BiwordedStructure bs : biwordsProvider) {
+		for (BiwordedStructure bs : biwordsCreator) {
 			try {
 				System.out.println("Initialized structure " + bs.getStructure().getSource() + " "
 					+ bs.getStructure().getId());
@@ -79,6 +86,28 @@ public class GridFactory {
 		}
 		Timer.stop();
 		System.out.println("creating structure, biwords and boundaries " + Timer.get());
+	}
+
+	/*private void createOrFinalizeBiwords(Structures structures) {
+		Set<StructureSource> completed = loadStructureIds(dirs.getCompletedBiwords());
+		for (StructureSource source : structures.getSources()) {
+			if (completed.contains(source)) {
+				System.out.println("Biwords for " + source + " already computed.");
+			} else {
+				System.out.println("Computing biwords for  " + source);
+
+				structures.ge
+				BiwordsFactory biwordsFactory = new BiwordsFactory(parameters, dirs, structure, parameters.getSkipY(), permute);
+				BiwordedStructure biwords = biwordsFactory.getBiwords();
+
+				System.out.println("Computation finished and biwords saved.");
+			}
+		}
+	}*/
+
+	private Set<StructureSource> loadStructureIds(File file) {
+		Set<StructureSource> set = new HashSet<>();
+		return set;
 	}
 
 	private void initializeBoundaries() {

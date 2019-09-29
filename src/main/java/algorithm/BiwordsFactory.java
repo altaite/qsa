@@ -31,13 +31,12 @@ import util.Timer;
  *
  * @author Antonin Pavelka
  *
- * Generator of all biwords from a single (quaternary) structure.
+ * Computes biwords from a single (quaternary) structure.
  *
  */
 public final class BiwordsFactory implements Serializable {
 
 	private final Parameters parameters;
-	private final Directories dirs;
 	private final SimpleStructure structure;
 	private final Word[] words;
 	private final boolean permute;
@@ -50,11 +49,10 @@ public final class BiwordsFactory implements Serializable {
 
 	// TODO extract all number to parameters
 	public BiwordsFactory(Parameters parameters, Directories dirs, SimpleStructure structure, int sparsity, boolean permute) {
- 		this.parameters = parameters;
-		this.dirs = dirs;
+		this.parameters = parameters;
 		this.structure = structure;
 		this.permute = permute;
-		
+
 		WordsFactory wf = new WordsFactory(parameters, structure, sparsity);
 		words = wf.create().toArray();
 		biwords = create();
@@ -63,6 +61,9 @@ public final class BiwordsFactory implements Serializable {
 		}
 	}
 
+	/**
+	 * Return all biwords computed for the structure.
+	 */
 	public BiwordedStructure getBiwords() {
 		return biwords;
 	}
@@ -125,8 +126,9 @@ public final class BiwordsFactory implements Serializable {
 		return grid;
 	}
 
-	// TEST?
-	private void findAllWordsInContact(Word queryWord, GridRangeSearch<AtomToWord> grid, Set<AtomToWord> wordsInContact) {
+	private void findAllWordsInContact(Word queryWord, GridRangeSearch<AtomToWord> grid,
+		Set<AtomToWord> wordsInContact) {
+
 		for (double[] atom : queryWord.getAtoms()) {
 			Point p = new Point(atom);
 			grid.nearest(p, parameters.getAtomContactDistance(), wordsInContact);
