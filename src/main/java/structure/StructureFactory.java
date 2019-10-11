@@ -47,8 +47,10 @@ public class StructureFactory {
 	public SimpleStructure getStructure(int id, StructureSource source) throws IOException, StructureParsingException {
 
 		Structure biojavaStructure = createBiojavaStructure(source);
-		assert biojavaStructure.size() > 0;
-
+		//assert biojavaStructure.size() > 0;
+		if (biojavaStructure.size() <= 0) {
+			return null;
+		}
 		ResidueFilter filter = getResidueFilter(source);
 
 		assert biojavaStructure.getModel(0).size() > 0 : biojavaStructure.getModel(0).size();
@@ -57,7 +59,10 @@ public class StructureFactory {
 		if (source.specifiesChain()) {
 			ss.removeChainsByNameExcept(source.getChain());
 		}
-		assert ss.size() > 0;
+		if (ss.size() < 0) {
+			return null;
+		}
+		//assert ss.size() > 0;
 		return ss;
 	}
 

@@ -1,7 +1,7 @@
 package api;
 
 import analysis.SearchJob;
-import analysis.statistics.BiwordsGenerator;
+import analysis.statistics.BiwordsAnalyzer;
 import java.io.File;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -25,8 +25,8 @@ public class CommandLineInterface {
 
 	private void runTask() {
 		if (analysis) {
-			BiwordsGenerator bg = new BiwordsGenerator(home);
-			bg.generate();
+			BiwordsAnalyzer bg = new BiwordsAnalyzer(home);
+			bg.run();
 		} else {
 			SearchJob job = new SearchJob(home);
 			job.run();

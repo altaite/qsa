@@ -233,6 +233,11 @@ public class Directories {
 		return p;
 	}
 
+	public Path getBiwordsForAnalysisDir() {
+		Path p = getHome().toPath().resolve("biwords_for_analysis");
+		return p;
+	}
+
 	/*
 	 * Use specified subdirectory in application's home directory.
 	 */
@@ -262,7 +267,7 @@ public class Directories {
 		createDirs(p);
 		return p.resolve(structureSetId.toString());
 	}
-	
+
 	public Path getBiwordedStructuresDir(StructuresId structureSetId) {
 		Path p = getHome().toPath().resolve("biworded_structures");
 		createDirs(p);
@@ -366,11 +371,30 @@ public class Directories {
 	public File getQueryCodes() {
 		return FileOperations.safeSubfile(getHome(), "query_codes.txt");
 	}
-	
+
 	public File getTestCodes() {
 		return FileOperations.safeSubfile(getHome(), "test_codes.txt");
 	}
 
+	public File getTestCodesDone() {
+		return FileOperations.safeSubfile(getHome(), "test_codes_done.txt");
+	}
+
+	public Path getTestBiwords() {
+		return FileOperations.safeSubfile(getHome(), "test_biwords").toPath();
+	}
+
+	public File getTestBiwordNumber() {
+		return FileOperations.safeSubfile(getHome(), "test_number_of_biwords");
+	}
+	
+	public File getTestBiwordBag() {
+		return FileOperations.safeSubfile(getHome(), "biword_bag.bin");
+	}
+
+	public File getTestStopFile() {
+		return FileOperations.safeSubfile(getHome(), "make_non_empty_to_stop.txt");
+	}
 
 	public File getTemp() {
 		return FileOperations.safeSub(getTask(), "temp");

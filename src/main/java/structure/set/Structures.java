@@ -14,6 +14,7 @@ import structure.StructureSizeFilter;
 import structure.StructureSource;
 
 /**
+ * TODO probably split into sources collection and a factory. Remove iterator over structures.
  *
  * Stores references (PDB codes or files) to structures and provides corresponding SimpleStructure objects.
  *
@@ -24,6 +25,7 @@ public class Structures implements Iterable<SimpleStructure> {
 // separate from biwords?
 // compute both at the same time? yes, speed
 // utilize map or list, single file?
+
 	private final Parameters parameters;
 	private final Directories dirs;
 	private final StructuresId id;
@@ -32,9 +34,13 @@ public class Structures implements Iterable<SimpleStructure> {
 	private int max = Integer.MAX_VALUE;
 	private StructureSizeFilter filter;
 	private int failed;
-
 	private Adder adder;
 
+	/**
+	 * TODO prepare StructureSources before, just pass as argument, no adder here.
+	 *
+	 * TODO assign ids later, or have them externally? This is too opaque, iterator.
+	 */
 	public Structures(Parameters parameters, Directories dirs, Cath cath, StructuresId id) {
 		this.structureSources = new StructureSources();
 		this.parameters = parameters;
@@ -42,6 +48,15 @@ public class Structures implements Iterable<SimpleStructure> {
 		this.id = id;
 		this.factory = new StructureFactory(dirs, cath);
 		this.adder = new Adder(dirs, structureSources);
+	}
+
+	public Structures(Parameters parameters, Directories dirs, Cath cath, StructuresId id,
+		StructureSources structureSources) {
+		this.structureSources = structureSources;
+		this.parameters = parameters;
+		this.dirs = dirs;
+		this.id = id;
+		this.factory = new StructureFactory(dirs, cath);
 	}
 
 	public Adder getAdder() {
@@ -74,6 +89,16 @@ public class Structures implements Iterable<SimpleStructure> {
 		StructureSource ref = structureSources.getSource(index);
 		SimpleStructure ss = factory.getStructure(structureId, ref);
 		return ss;
+	}
+
+	public SimpleStructure create(StructureSource source, int structureId)
+		throws IOException, StructureParsingException {
+
+		SimpleStructure structure = factory.getStructure(structureId, source);
+		if (structure == null) {
+			throw new StructureParsingException("Structure " + source + " is null.", false);
+		}
+		return structure;
 	}
 
 	public SimpleStructure getSingle() {

@@ -59,7 +59,7 @@ public class Adder {
 	}
 
 	/**
-	 * Process text file with ids supported by StructureSource. TODO remove duplicity with Entries
+	 * Process text file with ids supported by StructureSource.
 	 */
 	public void addFromIds(File file) {
 		String line = null;

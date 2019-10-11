@@ -88,10 +88,10 @@ public final class BiwordsFactory implements Serializable {
 		if (!permute) {
 			pairs = getOneDirection(pairs);
 		}
-		int strSize = pairs.size();
+		//int strSize = pairs.size();
 		addSequentialBiwords(pairs);
 		int totalSize = pairs.size();
-		System.out.println("str bwStr bwTot " + structure.size() + " " + strSize + " " + totalSize);
+		//System.out.println("str bwStr bwTot " + structure.size() + " " + strSize + " " + totalSize);
 		if (structure.size() == 0) {
 			fails++;
 		}
