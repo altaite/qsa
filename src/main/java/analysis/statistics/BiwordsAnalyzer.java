@@ -10,14 +10,15 @@ import altaite.collection.buffer.map.MapIn;
 import altaite.collection.buffer.map.MapOut;
 import analysis.statistics.bag.BiwordBagOut;
 import cath.Cath;
+import geometry.primitives.Point;
 import global.Parameters;
 import global.io.Directories;
 import global.io.LineFile;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import static java.lang.System.out;
 import java.nio.file.Path;
+import java.util.List;
 import structure.SimpleStructure;
 import structure.StructureSource;
 import structure.set.Adder;
@@ -25,15 +26,21 @@ import structure.set.StructureSources;
 import structure.set.StructureSourcesOperations;
 import structure.set.Structures;
 import structure.set.StructuresId;
+import util.ProgressReporter;
 
 public class BiwordsAnalyzer {
 
 	private Directories dirs;
 	private Parameters parameters;
 	private Path biwordsDir;
+	private Io io;
+
+	private boolean FEATURES = true;
+	private boolean OPTIMIZE = false;
 
 	public BiwordsAnalyzer(File home) {
 		dirs = new Directories(home);
+		io = new Io(dirs);
 		biwordsDir = dirs.getBiwordsForAnalysisDir();
 		parameters = Parameters.create(dirs.getParameters());
 	}
@@ -42,8 +49,15 @@ public class BiwordsAnalyzer {
 		//createBiwordBag();
 		//createBiwordedStructures(); // is it download or parsing?
 		//extractBiwordsAndSample();
+
+		if (FEATURES) {
+			generateFeatures();
+		}
+		if (OPTIMIZE) {
+			optimizeFeatures();
+		}
+
 		//cluster();
-		analyzeFeatures();
 	}
 
 	private void createBiwordBag() {
@@ -171,8 +185,8 @@ public class BiwordsAnalyzer {
 		Clustering clustering = new Clustering(dirs);
 		clustering.run(biwordsDir);
 	}
-	
-	private void analyzeFeatures() {
+
+	private void optimizeFeatures() {
 		FeatureAnalyzer analyzer = new FeatureAnalyzer(dirs);
 		analyzer.run();
 	}
@@ -212,4 +226,33 @@ public class BiwordsAnalyzer {
 		}
 	}
 
+	private void generateFeatures() {
+		System.out.println("reading biwrds...");
+		List<Point[]> biwords = io.getBiwords();
+		System.out.println("...done");
+		ProgressReporter progress = new ProgressReporter(biwords.size());
+		for (Point[] biword : biwords) {
+			double[] vector = getInternalCoordinates(biword);
+			for (int i = 0; i < vector.length; i++) {
+				io.writeFeature(i, vector[i]);
+			}
+			progress.inc();
+			progress.reportPercentage();
+		}
+		io.closeFeatures();
+		// each feature in its own file
+		// test dir
+	}
+
+	private double[] getInternalCoordinates(Point[] biword) {
+		int n = biword.length;
+		double[] coords = new double[n * (n - 1) / 2];
+		int i = 0;
+		for (int x = 0; x < biword.length; x++) {
+			for (int y = 0; y < x; y++) {
+				coords[i++] = biword[x].distance(biword[y]);
+			}
+		}
+		return coords;
+	}
 }

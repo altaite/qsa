@@ -1,18 +1,19 @@
-package analysis.statistics.bag;
+package analysis.statistics.features;
 
-import algorithm.Biword;
-import geometry.primitives.Point;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class BiwordBagOut {
+/**
+ * Storage of a similarity matrix distances that are small.
+ */
+public class ClosePairsOut {
 
 	private DataOutputStream out;
 
-	public BiwordBagOut(File file) {
+	public ClosePairsOut(File file) {
 		try {
 			out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
 		} catch (IOException ex) {
@@ -20,16 +21,11 @@ public class BiwordBagOut {
 		}
 	}
 
-	public void add(Biword biword) {
-		Point[] points = biword.getPoints();
+	public void add(int a, int b, double rmsd) {
 		try {
-			out.writeInt(points.length);
-			for (Point p : points) {
-				float[] coords = p.getCoordsAsFloats();
-				out.writeFloat(coords[0]);
-				out.writeFloat(coords[1]);
-				out.writeFloat(coords[2]);
-			}
+			out.writeInt(a);
+			out.writeInt(b);
+			out.writeFloat((float) rmsd);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -42,4 +38,5 @@ public class BiwordBagOut {
 			throw new RuntimeException(ex);
 		}
 	}
+
 }

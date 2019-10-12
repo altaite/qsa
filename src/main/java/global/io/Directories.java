@@ -387,13 +387,37 @@ public class Directories {
 	public File getTestBiwordNumber() {
 		return FileOperations.safeSubfile(getHome(), "test_number_of_biwords");
 	}
-	
+
 	public File getTestBiwordBag() {
 		return FileOperations.safeSubfile(getHome(), "biword_bag.bin");
 	}
 
 	public File getTestStopFile() {
 		return FileOperations.safeSubfile(getHome(), "make_non_empty_to_stop.txt");
+	}
+
+	public File getTestClosePairs() {
+		return FileOperations.safeSubfile(getHome(), "close_pairs.bin");
+	}
+
+	public File getTest() {
+		File file = FileOperations.safeSubfile(getHome(), "test");
+		if (!file.exists()) {
+			file.mkdir();
+		}
+		return file;
+	}
+
+	public File getTestFeatureFiles() {
+		File file = FileOperations.safeSubfile(getTest(), "features");
+		if (!file.exists()) {
+			file.mkdir();
+		}
+		return file;
+	}
+
+	public File getTestFeatureFile(int index) {
+		return FileOperations.safeSubfile(getTestFeatureFiles(), index + ".bin");
 	}
 
 	public File getTemp() {
