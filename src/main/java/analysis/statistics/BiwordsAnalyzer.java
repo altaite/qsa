@@ -1,6 +1,6 @@
 package analysis.statistics;
 
-import analysis.statistics.features.FeatureAnalyzer;
+import analysis.statistics.features.BestDivisionFinder;
 import algorithm.Biword;
 import algorithm.BiwordedStructure;
 import algorithm.BiwordsFactory;
@@ -35,8 +35,8 @@ public class BiwordsAnalyzer {
 	private Path biwordsDir;
 	private Io io;
 
-	private boolean FEATURES = true;
-	private boolean OPTIMIZE = false;
+	private boolean FEATURES = false;
+	private boolean OPTIMIZE = true;
 
 	public BiwordsAnalyzer(File home) {
 		dirs = new Directories(home);
@@ -187,7 +187,7 @@ public class BiwordsAnalyzer {
 	}
 
 	private void optimizeFeatures() {
-		FeatureAnalyzer analyzer = new FeatureAnalyzer(dirs);
+		BestDivisionFinder analyzer = new BestDivisionFinder(dirs);
 		analyzer.run();
 	}
 
@@ -237,7 +237,6 @@ public class BiwordsAnalyzer {
 				io.writeFeature(i, vector[i]);
 			}
 			progress.inc();
-			progress.reportPercentage();
 		}
 		io.closeFeatures();
 		// each feature in its own file

@@ -6,18 +6,26 @@ public class ProgressReporter {
 	private long counter;
 	private long last;
 
+	private long localCounter = 0;
+	private long localCounterMax = 0;
+
 	public ProgressReporter(long total) {
 		this.total = total;
 		last = System.currentTimeMillis();
+		localCounterMax = total / 100;
 	}
 
 	public void inc() {
 		counter++;
-		long now = System.currentTimeMillis();
-		if (now - last > 1000) {
-			reportPercentage();
-			last = now;
+		if (localCounter >= localCounterMax) {
+			localCounter = 0;
+			long now = System.currentTimeMillis();
+			if (now - last > 1000) {
+				reportPercentage();
+				last = now;
+			}
 		}
+		localCounter++;
 	}
 
 	public void reportPercentage() {
