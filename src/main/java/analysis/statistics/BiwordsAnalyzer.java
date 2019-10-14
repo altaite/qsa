@@ -30,13 +30,13 @@ import util.ProgressReporter;
 
 public class BiwordsAnalyzer {
 
-	private Directories dirs;
-	private Parameters parameters;
-	private Path biwordsDir;
-	private Io io;
+	private final Directories dirs;
+	private final Parameters parameters;
+	private final Path biwordsDir;
+	private final Io io;
 
-	private boolean FEATURES = false;
-	private boolean OPTIMIZE = true;
+	private final boolean FEATURES = false;
+	private final boolean OPTIMIZE = true;
 
 	public BiwordsAnalyzer(File home) {
 		dirs = new Directories(home);

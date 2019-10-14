@@ -11,35 +11,35 @@ import util.ProgressReporter;
 
 public class BestDivisionFinder {
 
-	private Directories dirs;
-	private List<Point[]> list;
-	private Superposer superposer = new Superposer();
-	private ClosePairsOut closePairs;
-	private Io io;
+	private final Directories dirs;
+	private final Superposer superposer = new Superposer();
+	private final Io io;
 
-	private boolean INITIALIZE = true;
+	private final boolean INITIALIZE = false;
+	private final boolean OPTIMIZE = true;
 	private final double THRESHOLD = 3;
-	private int SAMPLE_SIZE = 10000;
+	public final int SAMPLE_SIZE = 20000;
 
 	public BestDivisionFinder(Directories dirs) {
 		this.dirs = dirs;
-		this.closePairs = new ClosePairsOut(dirs.getTestClosePairs());
 		this.io = new Io(dirs);
 	}
 
 	public void run() {
 		if (INITIALIZE) {
-			list = io.getBiwords(SAMPLE_SIZE);
 			findClosePairs();
-		} else {
+		}
+		if (OPTIMIZE) {
 			optimize();
 		}
 	}
 
 	private void findClosePairs() {
+		List<Point[]> list = io.getBiwords(SAMPLE_SIZE);
 		/*long count = 0;
 		long close = 0;*/
 		long n = list.size();
+		ClosePairsOut closePairs = new ClosePairsOut(dirs.getTestClosePairs());
 		ProgressReporter progress = new ProgressReporter(n * (n - 1) / 2);
 		for (int x = 0; x < list.size(); x++) {
 			for (int y = 0; y < x; y++) {
@@ -57,6 +57,7 @@ public class BestDivisionFinder {
 				}*/
 			}
 		}
+		closePairs.close();
 	}
 
 	private double rmsd(Point[] a, Point[] b) {
@@ -66,13 +67,15 @@ public class BestDivisionFinder {
 
 	private void optimize() {
 		List<Integer> featureIndexes = readFeatureIndexes();
+		System.out.println("optimizing features");
 		for (int featureIndex : featureIndexes) {
+			System.out.println("evaluating feature " + featureIndex);
 			evaluateFeature(featureIndex);
 		}
 	}
 
 	private void evaluateFeature(int featureIndex) {
-		FeatureOptimizer fo = new FeatureOptimizer(dirs, featureIndex);
+		FeatureOptimizer fo = new FeatureOptimizer(dirs, featureIndex, SAMPLE_SIZE);
 		fo.run();
 	}
 
@@ -80,10 +83,11 @@ public class BestDivisionFinder {
 		List<Integer> featureIndexes = new ArrayList<>();
 		for (String fileName : dirs.getTestFeatureFiles().list()) {
 			try {
-				int i = new Integer(fileName);
+				String no = fileName.substring(0, fileName.length() - 4);
+				int i = new Integer(no);
 				featureIndexes.add(i);
 			} catch (Exception ex) {
-
+				ex.printStackTrace();
 			}
 		}
 		Collections.sort(featureIndexes);

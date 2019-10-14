@@ -11,35 +11,42 @@ import java.util.List;
 
 public class FeatureOptimizer {
 
-	private int featureIndex;
-	private Directories dirs;
-	private float RMSD_THRESHOLD = Float.POSITIVE_INFINITY;
+	private final int featureIndex;
+	private final Directories dirs;
+	private final float RMSD_THRESHOLD = Float.POSITIVE_INFINITY;
+	private final int sampleSize;
 
-	public FeatureOptimizer(Directories dirs, int featureIndex) {
+	public FeatureOptimizer(Directories dirs, int featureIndex, int sampleSize) {
 		this.dirs = dirs;
 		this.featureIndex = featureIndex;
-
+		this.sampleSize = sampleSize;
 	}
 
 	public void run() {
 		float[] feature = readFeature();
+		System.out.println("feture values " + feature.length);
 		float[] rightmostNeighbors = findRightmostNeigbors(feature);
 		float min = getMin(feature);
 		float max = getMax(feature);
 		float step = (max - min) / 100;
 		for (float a = min + step; a < max; a += step) {
 			float b = findRightBorder(a, feature, rightmostNeighbors);
-			System.out.println("Found borders " + a + " - " + b);
-			double value = evaluate(a, b);
+			if (a < b) {
+				System.out.println("Found borders " + a + " - " + b);
+			}
+			double value = evaluate(a, b, feature);
 		}
 	}
 
 	private float[] findRightmostNeigbors(float[] feature) {
 		float[] rightmostNeighbor = new float[feature.length];
 		for (int i = 0; i < rightmostNeighbor.length; i++) {
-			rightmostNeighbor[i] = Float.NEGATIVE_INFINITY;
+			rightmostNeighbor[i] = feature[i];
 		}
 		ClosePairsIn in = new ClosePairsIn(dirs.getTestClosePairs());
+		if (!in.isAvailable()) {
+			throw new RuntimeException("close pairs not ready");
+		}
 		while (in.isAvailable()) {
 			in.read();
 			float rmsd = in.getRmsd();
@@ -53,13 +60,22 @@ public class FeatureOptimizer {
 				}
 			}
 		}
+		in.close();
+		/*System.out.println("RIGHTMOST NEIGHBORS");
+		for (int i = 0; i < feature.length; i++) {
+			if (feature[i] < rightmostNeighbor[i]) {
+				System.out.println(feature[i] + " -> " + rightmostNeighbor[i]);
+			}
+		}
+		System.out.println("");
+		 */
 		return rightmostNeighbor;
 	}
 
 	private float findRightBorder(float leftBorder, float[] feature, float[] rightmostNeighbors) {
-		float rightBorder = Float.NEGATIVE_INFINITY;
+		float rightBorder = leftBorder;
 		for (int i = 0; i < feature.length; i++) {
-			if (feature[i] <= leftBorder) {
+			if (feature[i] <= leftBorder) { // biword is in the left group (A)
 				float right = rightmostNeighbors[i];
 				if (rightBorder < right) {
 					rightBorder = right;
@@ -69,8 +85,24 @@ public class FeatureOptimizer {
 		return rightBorder;
 	}
 
-	private double evaluate(float a, float b) {
-		return 0;
+	private double evaluate(float a, float b, float[] feature) {
+		int aSize = 0;
+		int bSize = 0;
+		int cSize = 0;
+		for (int i = 0; i < feature.length; i++) {
+			float f = feature[i];
+			if (f <= a) {
+				aSize++;
+			} else if (b < f) {
+				bSize++;
+			} else {
+				cSize++;
+			}
+
+		}
+		double score = ((double) aSize) * bSize;
+		System.out.println("Sizes: " + aSize + " | " + cSize + " | " + bSize + "   Score: " + score);
+		return score;
 	}
 
 	private float getMin(float[] values) {
@@ -97,7 +129,7 @@ public class FeatureOptimizer {
 		List<Float> list = new ArrayList<>();
 		File file = dirs.getTestFeatureFile(featureIndex);
 		try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
-			while (in.available() > 0) {
+			while (in.available() > 0 && list.size() < sampleSize) {
 				float f = in.readFloat();
 				list.add(f);
 			}
