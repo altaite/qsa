@@ -1,41 +1,44 @@
 package analysis.statistics.features;
 
 import global.io.Directories;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-public class FeatureOptimizer {
+/**
+ * Finds optimal split of a give feature.
+ */
+public class SplitOptimizer {
 
 	private final int featureIndex;
 	private final Directories dirs;
 	private final float RMSD_THRESHOLD = Float.POSITIVE_INFINITY;
-	private final int sampleSize;
+	private final ClosePairs closePairs;
+	private final Features features;
 
-	public FeatureOptimizer(Directories dirs, int featureIndex, int sampleSize) {
+	public SplitOptimizer(Directories dirs, Features features, int featureIndex, ClosePairs closePairs) {
 		this.dirs = dirs;
 		this.featureIndex = featureIndex;
-		this.sampleSize = sampleSize;
+		this.features = features;
+		this.closePairs = closePairs;
 	}
 
-	public void run() {
-		float[] feature = readFeature();
+	public double run() {
+		float[] feature = features.getFeature(featureIndex);
 		System.out.println("feture values " + feature.length);
 		float[] rightmostNeighbors = findRightmostNeigbors(feature);
 		float min = getMin(feature);
 		float max = getMax(feature);
 		float step = (max - min) / 100;
+		double bestScore = 0;
 		for (float a = min + step; a < max; a += step) {
 			float b = findRightBorder(a, feature, rightmostNeighbors);
 			if (a < b) {
-				System.out.println("Found borders " + a + " - " + b);
+				//System.out.println("Found borders " + a + " - " + b);
 			}
-			double value = evaluate(a, b, feature);
+			double score = evaluate(a, b, feature);
+			if (score > bestScore) {
+				bestScore = score;
+			}
 		}
+		return bestScore;
 	}
 
 	private float[] findRightmostNeigbors(float[] feature) {
@@ -43,15 +46,10 @@ public class FeatureOptimizer {
 		for (int i = 0; i < rightmostNeighbor.length; i++) {
 			rightmostNeighbor[i] = feature[i];
 		}
-		ClosePairsIn in = new ClosePairsIn(dirs.getTestClosePairs());
-		if (!in.isAvailable()) {
-			throw new RuntimeException("close pairs not ready");
-		}
-		while (in.isAvailable()) {
-			in.read();
-			float rmsd = in.getRmsd();
-			int a = in.getA();
-			int b = in.getB();
+		for (Pair pair : closePairs.getList()) {
+			float rmsd = pair.rmsd;
+			int a = pair.a;
+			int b = pair.b;
 			if (rmsd <= RMSD_THRESHOLD) {
 				float current = rightmostNeighbor[a];
 				float possible = feature[b];
@@ -60,7 +58,6 @@ public class FeatureOptimizer {
 				}
 			}
 		}
-		in.close();
 		/*System.out.println("RIGHTMOST NEIGHBORS");
 		for (int i = 0; i < feature.length; i++) {
 			if (feature[i] < rightmostNeighbor[i]) {
@@ -85,6 +82,9 @@ public class FeatureOptimizer {
 		return rightBorder;
 	}
 
+	/**
+	 * Returns the fraction of similarity evaluation that would be saved on average in the evaluated tree node split.
+	 */
 	private double evaluate(float a, float b, float[] feature) {
 		int aSize = 0;
 		int bSize = 0;
@@ -100,9 +100,14 @@ public class FeatureOptimizer {
 			}
 
 		}
-		double score = ((double) aSize) * bSize;
-		System.out.println("Sizes: " + aSize + " | " + cSize + " | " + bSize + "   Score: " + score);
+		double score = computeScore(aSize, bSize, cSize);
+		// TODO return object with min, max, a, b, sizes of sets
+		//System.out.println("Sizes: " + aSize + " | " + cSize + " | " + bSize + "   Score: " + score);
 		return score;
+	}
+
+	private double computeScore(double a, double b, double c) {
+		return 2 * a * b / Math.pow(a + b + c, 2);
 	}
 
 	private float getMin(float[] values) {
@@ -125,21 +130,4 @@ public class FeatureOptimizer {
 		return max;
 	}
 
-	private float[] readFeature() {
-		List<Float> list = new ArrayList<>();
-		File file = dirs.getTestFeatureFile(featureIndex);
-		try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
-			while (in.available() > 0 && list.size() < sampleSize) {
-				float f = in.readFloat();
-				list.add(f);
-			}
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		float[] array = new float[list.size()];
-		for (int i = 0; i < array.length; i++) {
-			array[i] = list.get(i);
-		}
-		return array;
-	}
 }

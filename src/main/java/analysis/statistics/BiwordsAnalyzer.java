@@ -1,6 +1,6 @@
 package analysis.statistics;
 
-import analysis.statistics.features.BestDivisionFinder;
+import analysis.statistics.features.SplitsEvaluator;
 import algorithm.Biword;
 import algorithm.BiwordedStructure;
 import algorithm.BiwordsFactory;
@@ -187,7 +187,7 @@ public class BiwordsAnalyzer {
 	}
 
 	private void optimizeFeatures() {
-		BestDivisionFinder analyzer = new BestDivisionFinder(dirs);
+		SplitsEvaluator analyzer = new SplitsEvaluator(dirs);
 		analyzer.run();
 	}
 
