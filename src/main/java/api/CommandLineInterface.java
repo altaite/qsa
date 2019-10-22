@@ -25,8 +25,8 @@ public class CommandLineInterface {
 
 	private void runTask() {
 		if (analysis) {
-			BiwordsAnalyzer bg = new BiwordsAnalyzer(home);
-			bg.run();
+			BiwordsAnalyzer a = new BiwordsAnalyzer(home);
+			a.run();
 		} else {
 			SearchJob job = new SearchJob(home);
 			job.run();

@@ -36,20 +36,20 @@ public class SplitsEvaluator {
 	private void optimize() {
 		ClosePairs pairs = loadClosePairs();
 		Features features = new Features(dirs);
-		double bestScore = 0;
+		Division best = null;
 		for (int featureIndex : features.getIndexes()) {
 			System.out.println("");
 			System.out.println("EVALUATING FEATURE " + featureIndex);
 
 			SplitOptimizer fo = new SplitOptimizer(dirs, features, featureIndex, pairs);
-			double score = fo.run();
-			if (score > bestScore) {
-				bestScore = score;
-			}
-			System.out.println("SCORE " + score);
-			System.out.println("");
+			Division division = fo.run();
+			System.out.println(division);
+			best = Division.getBetter(best, division);
+
 		}
-		System.out.println("BEST SCORE " + bestScore);
+		System.out.println("BEST DIVISION");
+		System.out.println(best);
+		System.out.println("");
 	}
 
 	private void findClosePairs() {
@@ -102,8 +102,9 @@ public class SplitsEvaluator {
 					a = b;
 					b = temp;
 				}
-				if (rmsd < FeatureParameters.secondRmsdThreshold)
-				pairs.add(a, b, rmsd);
+				if (rmsd < FeatureParameters.secondRmsdThreshold) {
+					pairs.add(a, b, rmsd);
+				}
 			} catch (Exception ex) {
 				System.out.println("NORMAL END, pairs loaded: " + pairs.getList().size());
 				ok = false;

@@ -54,9 +54,9 @@ public class BiwordsAnalyzer {
 			generateFeatures();
 		}
 		if (OPTIMIZE) {
-			optimizeFeatures();
+			SplitsEvaluator analyzer = new SplitsEvaluator(dirs);
+			analyzer.run();
 		}
-
 		//cluster();
 	}
 
@@ -184,11 +184,6 @@ public class BiwordsAnalyzer {
 	private void cluster() {
 		Clustering clustering = new Clustering(dirs);
 		clustering.run(biwordsDir);
-	}
-
-	private void optimizeFeatures() {
-		SplitsEvaluator analyzer = new SplitsEvaluator(dirs);
-		analyzer.run();
 	}
 
 	// TODO do it above, this is slow? and save it in primitives
