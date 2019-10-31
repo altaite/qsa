@@ -15,7 +15,7 @@ import java.util.Set;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import structure.Residue;
-import geometry.superposition.SuperPositionQCP;
+import altaite.geometry.superposition.SuperPositionQCP;
 import fragment.FragmentOfPolymer;
 
 public class ExpansionAlignment {

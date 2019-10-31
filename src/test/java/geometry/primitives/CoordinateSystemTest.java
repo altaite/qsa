@@ -1,8 +1,10 @@
 package geometry.primitives;
 
-import geometry.angles.Angles;
-import geometry.exceptions.CoordinateSystemException;
-import geometry.random.RandomGeometry;
+import altaite.geometry.exceptions.CoordinateSystemException;
+import altaite.geometry.primitives.Angles;
+import altaite.geometry.primitives.CoordinateSystem;
+import altaite.geometry.primitives.Point;
+import altaite.geometry.random.RandomGeometry;
 import junit.framework.TestCase;
 
 /**

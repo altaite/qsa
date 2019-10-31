@@ -1,15 +1,15 @@
 package algorithm;
 
+import altaite.geometry.GeometryUtil;
+import altaite.geometry.primitives.Point;
 import embedding.lipschitz.object.AlternativeMode;
 import fragment.word.Word;
 import fragment.biword.BiwordId;
 import javax.vecmath.Point3d;
-import geometry.primitives.Point;
 import structure.Residue;
 import util.Counter;
 import embedding.lipschitz.object.AlternativePointTuples;
-import embedding.lipschitz.object.PointTuple;
-import geometry.GeometryUtil;
+import altaite.geometry.primitives.PointTuple;
 
 /**
  *

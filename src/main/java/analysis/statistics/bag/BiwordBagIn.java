@@ -1,6 +1,6 @@
 package analysis.statistics.bag;
 
-import geometry.primitives.Point;
+import altaite.geometry.primitives.Point;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;

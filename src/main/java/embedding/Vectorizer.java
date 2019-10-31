@@ -1,6 +1,6 @@
 package embedding;
 
-import embedding.lipschitz.object.PointTuple;
+import altaite.geometry.primitives.PointTuple;
 import vectorization.dimension.Dimensions;
 
 /**

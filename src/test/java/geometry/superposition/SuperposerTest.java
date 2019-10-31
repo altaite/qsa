@@ -1,6 +1,7 @@
 package geometry.superposition;
 
-import geometry.primitives.Point;
+import altaite.geometry.primitives.Point;
+import altaite.geometry.superposition.Superposer;
 import javax.vecmath.Point3d;
 import javax.vecmath.Quat4d;
 import junit.framework.TestCase;

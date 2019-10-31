@@ -1,12 +1,12 @@
 package embedding;
 
 import vectorization.dimension.Dimensions;
-import geometry.exceptions.CoordinateSystemException;
-import geometry.primitives.AxisAngle;
-import geometry.primitives.CoordinateSystem;
-import geometry.primitives.Point;
-import geometry.primitives.Versor;
-import geometry.superposition.Superposer;
+import altaite.geometry.exceptions.CoordinateSystemException;
+import altaite.geometry.primitives.AxisAngle;
+import altaite.geometry.primitives.CoordinateSystem;
+import altaite.geometry.primitives.Point;
+import altaite.geometry.primitives.Versor;
+import altaite.geometry.superposition.Superposer;
 import global.io.LineFile;
 import language.Pair;
 import language.Util;

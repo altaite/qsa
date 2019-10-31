@@ -1,5 +1,7 @@
 package embedding.lipschitz.object;
 
+import altaite.geometry.primitives.PointTuple;
+
 /**
  *
  * @author Antonin Pavelka

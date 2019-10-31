@@ -1,17 +1,15 @@
 package fragment.word;
 
+import altaite.geometry.primitives.Point;
 import java.io.Serializable;
-
 import javax.vecmath.Point3d;
-
-import geometry.primitives.Point;
 import structure.Residue;
 import fragment.FragmentOfPolymer;
 
 /**
  * A sequence of residues of a fixed length.
  *
-j * @author Antonin Pavelka
+ * j * @author Antonin Pavelka
  */
 public class Word implements Serializable, FragmentOfPolymer, Comparable<Word> {
 

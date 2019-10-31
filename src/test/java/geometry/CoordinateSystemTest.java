@@ -1,8 +1,8 @@
 package geometry;
 
-import geometry.exceptions.CoordinateSystemException;
-import geometry.primitives.CoordinateSystem;
-import geometry.primitives.Point;
+import altaite.geometry.exceptions.CoordinateSystemException;
+import altaite.geometry.primitives.CoordinateSystem;
+import altaite.geometry.primitives.Point;
 import junit.framework.TestCase;
 
 /**

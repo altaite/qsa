@@ -1,16 +1,15 @@
 package embedding;
 
 import vectorization.dimension.Dimensions;
-import geometry.exceptions.CoordinateSystemException;
-import geometry.angles.Angles;
-import geometry.primitives.AxisAngle;
-import geometry.primitives.AxisAngleFactory;
-import geometry.primitives.CoordinateSystem;
-import geometry.primitives.Point;
-import geometry.primitives.Versor;
-import geometry.random.RandomGeometry;
-import geometry.superposition.Superposer;
-import geometry.test.RandomBodies;
+import altaite.geometry.exceptions.CoordinateSystemException;
+import altaite.geometry.primitives.Angles;
+import altaite.geometry.primitives.AxisAngle;
+import altaite.geometry.primitives.AxisAngleFactory;
+import altaite.geometry.primitives.CoordinateSystem;
+import altaite.geometry.primitives.Point;
+import altaite.geometry.primitives.Versor;
+import altaite.geometry.random.RandomGeometry;
+import altaite.geometry.superposition.Superposer;
 import global.io.LineFile;
 import info.laht.dualquat.Quaternion;
 import language.Pair;
@@ -37,8 +36,7 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 	public BallsDistanceTorsionVectorizer() {
 		file.clean();
 	}
-	
-	
+
 	private static Dimensions createDimensions() {
 		Dimension open = new DimensionOpen();
 		Dimension cyclic = new DimensionCyclic(-torsionFactor, torsionFactor);
@@ -63,7 +61,7 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 	@Override
 	public float[] vectorize(RigidBody b1, RigidBody b2, int imageNumber) throws VectorizationException {
 		try {
-			
+
 			float[] v = vectorizeUncatched(b1, b2, imageNumber);
 			System.out.print("VECTOR ");
 			for (float f : v) {
@@ -71,25 +69,23 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 			}
 			System.out.println();
 			return v;
-			
-			
+
 		} catch (CoordinateSystemException ex) {
 			throw new VectorizationException(ex);
 		}
 	}
 
-		private void save(RigidBody b, int number) {
+	private void save(RigidBody b, int number) {
 		file.write(b.toPdb(number, serial));
 	}
-	
+
 	private static int count = 0;
-		
+
 	private float[] vectorizeUncatched(RigidBody a, RigidBody b, int imageNumber) throws CoordinateSystemException {
-		
-		
+
 		save(a, count++);
 		save(b, count++);
-		
+
 		float[] ball1 = getBall(a, b);
 		float[] ball2 = getBall(b, a);
 		float[] torsion = {getTorsion(a, b, imageNumber)};
@@ -133,17 +129,15 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 		System.out.println(b1.center());
 		System.out.println("b2");
 		System.out.println(b2.center());
-		
+
 		//CoordinateSystem s1 = createSystem(b1.center().getAllPoints());
 		//CoordinateSystem s2 = createSystem(b2.center().getAllPoints());
 		Point anchor1 = Point.vector(b1.getCenter(), b2.getCenter()).normalize();
 
-		Quaternion q = new Quaternion().setFromUnitVectors(anchor1, new Point(1,0,0));
+		Quaternion q = new Quaternion().setFromUnitVectors(anchor1, new Point(1, 0, 0));
 
 		//System.out.println(s1);
-		
 		//System.out.println("q " + q);
-		
 		RigidBody c1 = b1.center().rotate(q);
 		RigidBody c2 = b2.center().rotate(q);
 
@@ -151,8 +145,7 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 		System.out.println(c1);
 		System.out.println("c2");
 		System.out.println(c2);
-		
-		
+
 		Superposer superposer = new Superposer(true);
 		superposer.set(c1.getAuxiliaryPoints(), c2.getAuxiliaryPoints());
 		Versor versor = superposer.getVersor();
@@ -228,7 +221,7 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 	static int fail;
 
 	public static void test(String[] args) throws CoordinateSystemException {
-		RandomBodies rb = new RandomBodies();
+		/*RandomBodies rb = new RandomBodies();
 		for (int i = 0; i < 1000; i++) {
 
 			double xAngle = Angles.toDegrees(rg.randomAngle());
@@ -237,12 +230,12 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 			setTorsion(Angles.toRadians(xAngle), rb);
 			setTorsion(Angles.toRadians(-xAngle), rb);
 		}
-		System.out.println("fails " + fail);
+		System.out.println("fails " + fail);*/
 	}
 
 	static RandomGeometry rg = new RandomGeometry();
 
-	private static void setTorsion(double torsion, RandomBodies rb) throws CoordinateSystemException {
+	/*private static void setTorsion(double torsion, RandomBodies rb) throws CoordinateSystemException {
 		double in = Angles.wrap(torsion);//Angles.wrap();
 		Pair<RigidBody> bodies = rb.createDummiesX(new Point(0, 0, 0), in);
 		BallsDistanceTorsionVectorizer vectorizer = new BallsDistanceTorsionVectorizer();
@@ -250,12 +243,7 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 		out = out / torsionFactor * Math.PI;
 		//System.out.println(Angles.wrap(in)  -  out);
 		System.out.println(Angles.wrap(in) + " " + Angles.wrap(out));
-		/*if (Math.abs(in - out) > 0.0001) {
-			System.err.println(Angles.toDegrees(in) + " " + Angles.toDegrees(out));
-			fail++;//throw new RuntimeException(in +" " + out);
-		}*/
-	}
-
+	}*/
 	private static AxisAngle getAngle(RigidBody a, RigidBody b) {
 		Superposer superposer = new Superposer(true); // bodies are in zero origin
 		superposer.set(a.getAuxiliaryPoints(), b.getAuxiliaryPoints());

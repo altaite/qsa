@@ -8,7 +8,7 @@ import altaite.collection.buffer.BigResource;
 import altaite.collection.buffer.map.MapIn;
 import embedding.lipschitz.LipschitzEmbedding;
 import embedding.lipschitz.object.AlternativePointTuples;
-import geometry.superposition.Superposer;
+import altaite.geometry.superposition.Superposer;
 import global.io.Directories;
 import java.nio.file.Path;
 import java.util.ArrayList;

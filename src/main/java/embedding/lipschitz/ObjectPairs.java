@@ -5,7 +5,7 @@ import embedding.lipschitz.object.AlternativePointTuples;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
-import embedding.lipschitz.object.PointTupleDistanceMeasurement;
+import altaite.geometry.primitives.PointTupleDistanceMeasurement;
 import java.io.Serializable;
 
 /**

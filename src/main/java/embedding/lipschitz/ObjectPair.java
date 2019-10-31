@@ -2,7 +2,7 @@ package embedding.lipschitz;
 
 import embedding.lipschitz.object.AlternativeMode;
 import embedding.lipschitz.object.AlternativePointTuples;
-import embedding.lipschitz.object.PointTupleDistanceMeasurement;
+import altaite.geometry.primitives.PointTupleDistanceMeasurement;
 import java.io.Serializable;
 
 /**

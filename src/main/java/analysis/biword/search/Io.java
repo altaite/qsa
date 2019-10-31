@@ -1,7 +1,7 @@
-package analysis.statistics;
+package analysis.biword.search;
 
 import analysis.statistics.bag.BiwordBagIn;
-import geometry.primitives.Point;
+import altaite.geometry.primitives.Point;
 import global.io.Directories;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;

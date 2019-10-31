@@ -1,6 +1,6 @@
 package structure;
 
-import geometry.primitives.Point;
+import altaite.geometry.primitives.Point;
 
 /**
  *

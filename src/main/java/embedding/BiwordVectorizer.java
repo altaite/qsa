@@ -3,7 +3,7 @@ package embedding;
 import algorithm.Biword;
 import vectorization.dimension.Dimensions;
 import fragment.word.Word;
-import geometry.primitives.Point;
+import altaite.geometry.primitives.Point;
 import language.Util;
 import structure.VectorizationException;
 import structure.Residue;

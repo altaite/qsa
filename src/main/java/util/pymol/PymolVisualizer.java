@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import geometry.primitives.Point;
+import altaite.geometry.primitives.Point;
 import java.util.Collection;
 import javax.vecmath.Point3d;
 import structure.visual.PdbLine;

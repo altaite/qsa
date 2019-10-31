@@ -1,6 +1,6 @@
 package structure.visual;
 
-import geometry.primitives.Point;
+import altaite.geometry.primitives.Point;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Locale;

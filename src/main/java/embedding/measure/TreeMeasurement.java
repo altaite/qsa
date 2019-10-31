@@ -12,7 +12,7 @@ import fragment.biword.BiwordPairWriter;
 import fragment.index.Grids;
 import fragment.index.Grid;
 import fragment.serialization.BiwordLoader;
-import geometry.superposition.Superposer;
+import altaite.geometry.superposition.Superposer;
 import global.Parameters;
 import global.io.Directories;
 import grid.sparse.BufferOfLong;

@@ -1,4 +1,4 @@
-package analysis.statistics.features;
+package analysis.biword.search;
 
 import global.io.Directories;
 import java.io.BufferedInputStream;
@@ -15,8 +15,9 @@ public class Features {
 	private final Directories dirs;
 	private final float[][] features;
 	private final int[] indexes;
+	private long itemLimit;
 
-	public Features(Directories dirs) {
+	public Features(Directories dirs, long itemLimit) {
 		this.dirs = dirs;
 		this.indexes = readIndexes();
 		this.features = loadFeatures();
@@ -61,7 +62,7 @@ public class Features {
 		List<Float> list = new ArrayList<>();
 		File file = dirs.getTestFeatureFile(featureIndex);
 		try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
-			while (in.available() > 0 && list.size() < FeatureParameters.sampleSize) {
+			while (in.available() > 0 && list.size() < itemLimit) {
 				float f = in.readFloat();
 				list.add(f);
 			}

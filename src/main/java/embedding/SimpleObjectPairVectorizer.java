@@ -1,9 +1,9 @@
 package embedding;
 
 import vectorization.dimension.Dimensions;
-import geometry.exceptions.CoordinateSystemException;
-import geometry.primitives.CoordinateSystem;
-import geometry.primitives.Point;
+import altaite.geometry.exceptions.CoordinateSystemException;
+import altaite.geometry.primitives.CoordinateSystem;
+import altaite.geometry.primitives.Point;
 import structure.VectorizationException;
 
 /**

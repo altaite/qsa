@@ -2,8 +2,8 @@ package algorithm.scoring;
 
 import fragment.word.Word;
 import fragment.word.WordsFactory;
-import geometry.primitives.Point;
-import geometry.superposition.Superposer;
+import altaite.geometry.primitives.Point;
+import altaite.geometry.superposition.Superposer;
 import global.Parameters;
 import java.util.ArrayList;
 import java.util.Arrays;

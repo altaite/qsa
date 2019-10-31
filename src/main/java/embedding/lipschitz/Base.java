@@ -1,7 +1,7 @@
 package embedding.lipschitz;
 
-import embedding.lipschitz.object.PointTuple;
-import embedding.lipschitz.object.PointTupleDistanceMeasurement;
+import altaite.geometry.primitives.PointTuple;
+import altaite.geometry.primitives.PointTupleDistanceMeasurement;
 
 /**
  *

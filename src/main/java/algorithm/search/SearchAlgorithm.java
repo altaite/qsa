@@ -24,7 +24,7 @@ import fragment.alignment.ExpansionAlignment;
 import fragment.alignment.ExpansionAlignments;
 import java.util.ArrayList;
 import java.util.List;
-import geometry.superposition.Superposer;
+import altaite.geometry.superposition.Superposer;
 import global.io.Directories;
 import grid.sparse.BufferOfLong;
 import java.io.File;

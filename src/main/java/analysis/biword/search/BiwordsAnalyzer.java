@@ -1,6 +1,5 @@
-package analysis.statistics;
+package analysis.biword.search;
 
-import analysis.statistics.features.SplitsEvaluator;
 import algorithm.Biword;
 import algorithm.BiwordedStructure;
 import algorithm.BiwordsFactory;
@@ -8,9 +7,10 @@ import altaite.collection.buffer.BigOut;
 import altaite.collection.buffer.BigResource;
 import altaite.collection.buffer.map.MapIn;
 import altaite.collection.buffer.map.MapOut;
+import analysis.statistics.Clustering;
 import analysis.statistics.bag.BiwordBagOut;
 import cath.Cath;
-import geometry.primitives.Point;
+import altaite.geometry.primitives.Point;
 import global.Parameters;
 import global.io.Directories;
 import global.io.LineFile;
@@ -54,8 +54,8 @@ public class BiwordsAnalyzer {
 			generateFeatures();
 		}
 		if (OPTIMIZE) {
-			SplitsEvaluator analyzer = new SplitsEvaluator(dirs);
-			analyzer.run();
+			//SplitsEvaluator analyzer = new SplitsEvaluator(dirs);
+			//analyzer.run();
 		}
 		//cluster();
 	}

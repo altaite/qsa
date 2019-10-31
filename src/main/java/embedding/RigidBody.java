@@ -1,11 +1,11 @@
 package embedding;
 
-import geometry.exceptions.CoordinateSystemException;
-import geometry.primitives.CoordinateSystem;
-import geometry.primitives.MatrixRotation;
-import geometry.primitives.Point;
-import geometry.primitives.Versor;
-import geometry.superposition.Superposer;
+import altaite.geometry.exceptions.CoordinateSystemException;
+import altaite.geometry.primitives.CoordinateSystem;
+import altaite.geometry.primitives.MatrixRotation;
+import altaite.geometry.primitives.Point;
+import altaite.geometry.primitives.Versor;
+import altaite.geometry.superposition.Superposer;
 import info.laht.dualquat.Quaternion;
 import java.util.function.Function;
 import structure.visual.Graphics;

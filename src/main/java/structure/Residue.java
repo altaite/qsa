@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 
-import geometry.primitives.Point;
+import altaite.geometry.primitives.Point;
 
 /**
  *

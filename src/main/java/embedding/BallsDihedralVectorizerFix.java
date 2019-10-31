@@ -1,14 +1,13 @@
 package embedding;
 
 import vectorization.dimension.Dimensions;
-import geometry.exceptions.CoordinateSystemException;
-import geometry.angles.Angles;
-import geometry.primitives.AxisAngle;
-import geometry.primitives.AxisAngleFactory;
-import geometry.primitives.CoordinateSystem;
-import geometry.primitives.Point;
-import geometry.superposition.Superposer;
-import geometry.test.RandomBodies;
+import altaite.geometry.exceptions.CoordinateSystemException;
+import altaite.geometry.primitives.Angles;
+import altaite.geometry.primitives.AxisAngle;
+import altaite.geometry.primitives.AxisAngleFactory;
+import altaite.geometry.primitives.CoordinateSystem;
+import altaite.geometry.primitives.Point;
+import altaite.geometry.superposition.Superposer;
 import language.Pair;
 import language.Util;
 import structure.VectorizationException;
@@ -143,7 +142,7 @@ public class BallsDihedralVectorizerFix implements ObjectPairVectorizer {
 	}
 
 	public static void test(String[] args) {
-		RandomBodies rb = new RandomBodies();
+		/*RandomBodies rb = new RandomBodies();
 		for (int i = 0; i < 1000; i++) {
 			// add noise and measure average? decision if it is here
 			// unclear how to add other angles
@@ -156,7 +155,7 @@ public class BallsDihedralVectorizerFix implements ObjectPairVectorizer {
 			System.out.println("dihedral: " + Angles.toDegrees(vectorizer.getDihedral(bodies._1, bodies._2, 0)
 				/ dihedralFactor * Math.PI));
 			System.out.println("");
-		}
+		}*/
 	}
 
 	private static AxisAngle getAngle(RigidBody a, RigidBody b) {

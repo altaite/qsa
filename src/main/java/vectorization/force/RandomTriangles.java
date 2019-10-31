@@ -1,7 +1,7 @@
 package vectorization.force;
 
-import geometry.primitives.Point;
-import geometry.random.RandomGeometry;
+import altaite.geometry.primitives.Point;
+import altaite.geometry.random.RandomGeometry;
 import embedding.RigidBody;
 
 public class RandomTriangles {

@@ -1,6 +1,6 @@
 package metric;
 
-import geometry.primitives.Point;
+import altaite.geometry.primitives.Point;
 
 /**
  *

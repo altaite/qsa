@@ -5,7 +5,11 @@
  */
 package geometry.primitives;
 
-import geometry.superposition.Superposer;
+import altaite.geometry.primitives.AxisAngle;
+import altaite.geometry.primitives.AxisAngleFactory;
+import altaite.geometry.primitives.Point;
+import altaite.geometry.primitives.Versor;
+import altaite.geometry.superposition.Superposer;
 import java.util.Random;
 import javax.vecmath.Matrix3d;
 import junit.framework.TestCase;

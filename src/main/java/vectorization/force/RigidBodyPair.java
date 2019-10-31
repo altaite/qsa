@@ -1,8 +1,8 @@
 package vectorization.force;
 
 import metric.LpSpace;
-import geometry.primitives.Point;
-import geometry.superposition.Superposer;
+import altaite.geometry.primitives.Point;
+import altaite.geometry.superposition.Superposer;
 import javax.vecmath.Point3d;
 import structure.VectorizationException;
 import embedding.ObjectPairVectorizer;

@@ -1,7 +1,7 @@
 package api;
 
 import analysis.SearchJob;
-import analysis.statistics.BiwordsAnalyzer;
+import analysis.biword.search.BiwordsAnalyzer;
 import java.io.File;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
