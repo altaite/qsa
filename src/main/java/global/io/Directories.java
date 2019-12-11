@@ -1,5 +1,6 @@
 package global.io;
 
+import io.FileOperations;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -406,18 +407,6 @@ public class Directories {
 			file.mkdir();
 		}
 		return file;
-	}
-
-	public File getTestFeatureFiles() {
-		File file = FileOperations.safeSubfile(getTest(), "features");
-		if (!file.exists()) {
-			file.mkdir();
-		}
-		return file;
-	}
-
-	public File getTestFeatureFile(int index) {
-		return FileOperations.safeSubfile(getTestFeatureFiles(), index + ".bin");
 	}
 
 	public File getTemp() {
