@@ -1,6 +1,5 @@
 package global.io;
 
-import io.FileOperations;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -236,6 +235,11 @@ public class Directories {
 
 	public Path getBiwordsForAnalysisDir() {
 		Path p = getHome().toPath().resolve("biwords_for_analysis");
+		return p;
+	}
+
+	public Path getFrameDir() {
+		Path p = getHome().toPath().resolve("frames");
 		return p;
 	}
 
@@ -546,4 +550,11 @@ public class Directories {
 		return p.toFile();
 	}
 
+	public File getTestFeatureFile(int index) {
+		throw new UnsupportedOperationException();
+	}
+
+	public File getTestFeatureFiles() {
+		throw new UnsupportedOperationException();
+	}
 }

@@ -112,6 +112,16 @@ public class SimpleStructure implements Serializable {
 		return residues;
 	}
 
+	public Residue[] getResidueArray() {
+		Collection<Residue> all = getResidues().values();
+		Residue[] a = new Residue[all.size()];
+		int i = 0;
+		for (Residue r : all) {
+			a[i++] = r;
+		}
+		return a;
+	}
+
 	public Residue getResidue(ResidueId rid) {
 		return getResidues().get(rid);
 	}

@@ -23,6 +23,9 @@ public class StructureSourcesOperations {
 	public static StructureSources subsample(StructureSources all, int sampleSize) {
 		StructureSources sample = new StructureSources();
 		List<StructureSource> list = new ArrayList(all.getSources());
+		if (list.size() < sampleSize) {
+			throw new RuntimeException(sampleSize + " < " + list.size());
+		}
 		Random random = new Random(1);
 		Set<Integer> indexes = new HashSet<>();
 		while (indexes.size() < sampleSize) {

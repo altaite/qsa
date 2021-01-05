@@ -139,6 +139,10 @@ public class Residue implements Serializable, Comparable<Residue> {
 	public Point getN() {
 		return new Point(getAtom("N"));
 	}
+	
+	public Point getO() {
+		return new Point(getAtom("O"));
+	}
 
 	public double distance(Residue other) {
 		return position_.distance(other.position_);
