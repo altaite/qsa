@@ -2,6 +2,7 @@ package structure;
 
 import altaite.geometry.primitives.Point;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -119,6 +120,7 @@ public class SimpleStructure implements Serializable {
 		for (Residue r : all) {
 			a[i++] = r;
 		}
+		Arrays.sort(a);
 		return a;
 	}
 

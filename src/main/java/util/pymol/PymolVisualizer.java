@@ -34,6 +34,7 @@ public class PymolVisualizer {
 	}
 
 	public void saveSelections(File f) {
+		System.out.println(selectionNames.size() + " !13311");
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(f))) {
 			for (int i = 0; i < selectionNames.size(); i++) {
 				Residue[] rs = selectionResidues.get(i);

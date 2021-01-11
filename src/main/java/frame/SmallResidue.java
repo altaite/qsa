@@ -12,6 +12,7 @@ public class SmallResidue {
 	private double phi;
 	private double psi;
 	private short[] neighbors;
+	private short visitedBy = -1;
 
 	public SmallResidue(double x, double y, double z, Quaternion orientation, double phi, double psi, short[] neighbors) {
 		this.x = x;
@@ -28,6 +29,14 @@ public class SmallResidue {
 		double dy = y - other.y;
 		double dz = z - other.z;
 		return Math.sqrt(dx * dx + dy * dy + dz * dz);
+	}
+
+	public boolean canVisit(int visitorId) {
+		return visitorId != visitedBy;
+	}
+
+	public void visit(short visitorId) {
+		visitedBy = visitorId;
 	}
 
 	public double getX() {
@@ -48,6 +57,10 @@ public class SmallResidue {
 
 	public double getPsi() {
 		return psi;
+	}
+
+	public short[] getNeighbors() {
+		return neighbors;
 	}
 
 	// form universal residue, cluster many together
