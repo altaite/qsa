@@ -1,8 +1,8 @@
-package frame;
+package orientation;
 
 import altaite.geometry.primitives.Point;
+import altaite.geometry.primitives.Quat;
 import altaite.geometry.superposition.Superposer;
-import info.laht.dualquat.Quaternion;
 import structure.Residue;
 
 public class StandardResidueOrientation {
@@ -25,10 +25,10 @@ public class StandardResidueOrientation {
 			
 		}
 	}*/
-	public Quaternion getQuaternion(Residue r) {
+	public Quat getQuaternion(Residue r) {
 		Point[] residuePoints = extractAndCenter(r);
 		superposer.set(standardPoints, residuePoints);
-		Quaternion transformation = superposer.getQuaternion();
+		Quat transformation = superposer.getQuaternion();
 		double rmsd = superposer.getRmsd();
 		// check rmsd here
 		return transformation;

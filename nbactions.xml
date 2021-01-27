@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xmx6g -Xss100m -ea -classpath %classpath frame.FrameLauncher -h d:/t/data/qsa -a</exec.args>
+                <exec.args>-Xmx6g -Xss100m -ea -classpath %classpath orientation.PairGenerator -h d:/t/data/qsa -a</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -Xmx6g -Xss100m -ea -classpath %classpath frame.FrameLauncher -h d:/t/data/qsa -a</exec.args>
+                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -Xmx6g -Xss100m -ea -classpath %classpath orientation.PairGenerator -h d:/t/data/qsa -a</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xmx6g -Xss100m -ea -classpath %classpath frame.FrameLauncher -h d:/t/data/qsa -a</exec.args>
+                <exec.args>-Xmx6g -Xss100m -ea -classpath %classpath orientation.PairGenerator -h d:/t/data/qsa -a</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

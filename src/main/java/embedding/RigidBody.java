@@ -4,6 +4,7 @@ import altaite.geometry.exceptions.CoordinateSystemException;
 import altaite.geometry.primitives.CoordinateSystem;
 import altaite.geometry.primitives.MatrixRotation;
 import altaite.geometry.primitives.Point;
+import altaite.geometry.primitives.Quat;
 import altaite.geometry.primitives.Versor;
 import altaite.geometry.superposition.Superposer;
 import info.laht.dualquat.Quaternion;
@@ -70,14 +71,9 @@ public class RigidBody {
 		return transform(x -> system.expresPoint(x));
 	}
 
-	public RigidBody rotate(Versor versor) {
+	public RigidBody rotate(Quat quaternion) {
 		centerIsInOrigin();
-		return transform(x -> versor.rotate(x));
-	}
-
-	public RigidBody rotate(Quaternion quaternion) {
-		centerIsInOrigin();
-		return transform(x -> quaternion.toVersor().rotate(x));
+		return transform(x -> quaternion.rotate(x));
 	}
 
 	public RigidBody rotate(MatrixRotation matrix) {
@@ -158,10 +154,10 @@ public class RigidBody {
 		return sb.toString();
 	}
 
-	public Versor computeRotation(RigidBody other) {
+	public Quat computeRotation(RigidBody other) {
 		Superposer superposer = new Superposer(true); // bodies are in zero origin
 		superposer.set(getAuxiliaryPoints(), other.getAuxiliaryPoints());
-		Versor versor = superposer.getVersor();
+		Quat versor = superposer.getQuaternion();
 		return versor;
 	}
 

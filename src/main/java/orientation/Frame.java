@@ -1,4 +1,4 @@
-package frame;
+package orientation;
 
 public class Frame {
 

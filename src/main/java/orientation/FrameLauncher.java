@@ -1,4 +1,4 @@
-package frame;
+package orientation;
 
 import altaite.collection.performance.Timer;
 import cath.Cath;
@@ -58,16 +58,16 @@ public class FrameLauncher {
 
 		Structures structures = new Structures(parameters, dirs, cath, new StructuresId("pdb_full"), todo);
 		int id = 0;
-		List<Frames> frames = new ArrayList<>();
+
+		List<SmallStructure> simps = new ArrayList<>();
 		for (StructureSource source : structures.getSources()) {
 			try {
 				if (dirs.getTestStopFile().length() > 0) {
 					break;
 				}
-				System.out.println(id + " working on " + source + " ...");
 				SimpleStructure structure = structures.create(source, id++);
 				SmallStructure ss = new SmallStructure(structure, sro);
-				frames.add(new Frames(ss));
+				simps.add(ss);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				saveDone(source);
@@ -77,7 +77,19 @@ public class FrameLauncher {
 			}
 		}
 
-		Random random = new Random(1);
+		Time.start("searches");
+		int count = 0;
+		for (SmallStructure ss : simps) {
+			Walk walk = new Walk(ss, ss);
+			walk.align();
+			count++;
+		}
+		System.out.println("Searches: " + count);
+		Time.stop("searches");
+		Time.print();
+		double ms = (double) Time.get("searches").getMiliseconds();
+		System.out.println("Per search " + (ms / count));
+		/*Random random = new Random(1);
 		Time.start("searches");
 		int count = 0;
 		for (int x = 0; x < frames.size(); x++) {
@@ -94,7 +106,7 @@ public class FrameLauncher {
 		Time.stop("searches");
 		Time.print();
 		double ms = (double) Time.get("searches").getMiliseconds();
-		System.out.println("Per search " + (ms / count));
+		System.out.println("Per search " + (ms / count));*/
 	}
 
 	private StandardResidueOrientation createStandardResidueOrientation() {

@@ -1,4 +1,4 @@
-package frame;
+package orientation;
 
 import java.util.Random;
 
@@ -33,10 +33,13 @@ public class Walk {
 	private void walkFrom() { // maybe early hard branching to avoid dead end on domain boundary
 		x = xStart;
 		y = yStart;
-		while (step()) {
+		int i = 0;
+		while (step() && i < 5) {
+			i++;
 		}
 	}
-
+	
+	
 	// moves x and y, if no or no good continuation found, sets a flag
 	private boolean step() {
 		SmallResidue xr = ars[x];
@@ -51,6 +54,7 @@ public class Walk {
 					y = bestNeighbor;
 					xn.visit(xStart);
 					return true;
+
 				} else {
 					return false;
 				}
@@ -70,9 +74,15 @@ public class Walk {
 			}
 		}
 	}
-
+	// isolate and compare with RMSD, the orientation part
+	// similarity of neighbor pairs, but phi/psi not?
 	private double similarity(SmallResidue xr, SmallResidue yr) {
-		return 1;
+		
+		
+		double dPhi = Math.abs(xr.getPhi() - yr.getPhi());
+		double dPsi = Math.abs(xr.getPsi( ) - yr.getPsi());
+		xr.getOrientation().multiply(yr.getOrientation());
+		return 1 - (dPhi * dPsi / 100000);
 	}
 
 	// first just one walk, simplicity

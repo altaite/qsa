@@ -1,5 +1,6 @@
-package frame;
+package orientation;
 
+import altaite.geometry.primitives.Quat;
 import info.laht.dualquat.Quaternion;
 //import javax.vecmath.Quat4d;
 
@@ -8,13 +9,13 @@ public class SmallResidue {
 	private double x;
 	private double y;
 	private double z;
-	private Quaternion orientation; // TODO make immutable insides
+	private Quat orientation; // TODO make immutable insides
 	private double phi;
 	private double psi;
 	private short[] neighbors;
 	private short visitedBy = -1;
 
-	public SmallResidue(double x, double y, double z, Quaternion orientation, double phi, double psi, short[] neighbors) {
+	public SmallResidue(double x, double y, double z, Quat orientation, double phi, double psi, short[] neighbors) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -22,6 +23,10 @@ public class SmallResidue {
 		this.psi = psi;
 		this.phi = phi;
 		this.neighbors = neighbors;
+	}
+
+	public Quat getOrientation() {
+		return orientation;
 	}
 
 	public double getDistance(SmallResidue other) {

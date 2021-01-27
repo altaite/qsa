@@ -115,6 +115,11 @@
             <artifactId>geometry</artifactId>
             <version>4.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>altaite</groupId>
+            <artifactId>Dataset</artifactId>
+            <version>4.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <!--build>
         <plugins>

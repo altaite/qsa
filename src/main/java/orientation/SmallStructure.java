@@ -1,8 +1,8 @@
-package frame;
+package orientation;
 
 import altaite.geometry.primitives.Point;
+import altaite.geometry.primitives.Quat;
 import altaite.geometry.search.GridRangeSearch;
-import info.laht.dualquat.Quaternion;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,7 +67,7 @@ public class SmallStructure implements Iterable<SmallResidue> {
 
 	private SmallResidue convert(Residue r, StandardResidueOrientation sro, short[] neighbors) {
 		Point p = r.getPosition();
-		Quaternion orientation = sro.getQuaternion(r);
+		Quat orientation = sro.getQuaternion(r);
 		shuffle(neighbors);
 		SmallResidue si = new SmallResidue(p.x, p.y, p.z, orientation, r.getPhi(), r.getPsi(), neighbors);
 		return si;

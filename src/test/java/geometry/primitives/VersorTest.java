@@ -8,6 +8,7 @@ package geometry.primitives;
 import altaite.geometry.primitives.AxisAngle;
 import altaite.geometry.primitives.AxisAngleFactory;
 import altaite.geometry.primitives.Point;
+import altaite.geometry.primitives.Quat;
 import altaite.geometry.primitives.Versor;
 import altaite.geometry.superposition.Superposer;
 import java.util.Random;
@@ -16,9 +17,9 @@ import junit.framework.TestCase;
 import embedding.RigidBody;
 
 /**
- *
- * @author kepler
+ * Moved to geometry package.
  */
+@Deprecated
 public class VersorTest extends TestCase {
 
 	Random random = new Random(1);
@@ -63,7 +64,7 @@ public class VersorTest extends TestCase {
 		Point[] b = {new Point(0, -1, 0).normalize(), new Point(1, 0, 0).normalize()};
 		Superposer superposer = new Superposer(true);
 		superposer.set(a, b);
-		Versor v = superposer.getVersor();
+		Quat v = superposer.getQuaternion();
 		System.out.println("versor " + v);
 
 		Matrix3d matrix = superposer.getRotationMatrix();
@@ -84,8 +85,8 @@ public class VersorTest extends TestCase {
 
 		RigidBody x = RigidBody.createWithCenter(new Point(0, 0, 0), a);
 		RigidBody y = RigidBody.createWithCenter(new Point(0, 0, 0), b);
-		RigidBody z = x.rotate(v.inverse());
-		RigidBody w = y.rotate(v.inverse());
+		RigidBody z = x.rotate(v.conjugate().normalize());
+		RigidBody w = y.rotate(v.conjugate().normalize());
 		System.out.println(x);
 		System.out.println(y);
 		System.out.println(z);

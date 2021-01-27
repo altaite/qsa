@@ -7,6 +7,7 @@ import altaite.geometry.primitives.AxisAngle;
 import altaite.geometry.primitives.AxisAngleFactory;
 import altaite.geometry.primitives.CoordinateSystem;
 import altaite.geometry.primitives.Point;
+import altaite.geometry.primitives.Quat;
 import altaite.geometry.primitives.Versor;
 import altaite.geometry.random.RandomGeometry;
 import altaite.geometry.superposition.Superposer;
@@ -134,7 +135,7 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 		//CoordinateSystem s2 = createSystem(b2.center().getAllPoints());
 		Point anchor1 = Point.vector(b1.getCenter(), b2.getCenter()).normalize();
 
-		Quaternion q = new Quaternion().setFromUnitVectors(anchor1, new Point(1, 0, 0));
+		Quat q = new Quaternion().setFromUnitVectors(anchor1, new Point(1, 0, 0));
 
 		//System.out.println(s1);
 		//System.out.println("q " + q);
@@ -148,7 +149,7 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 
 		Superposer superposer = new Superposer(true);
 		superposer.set(c1.getAuxiliaryPoints(), c2.getAuxiliaryPoints());
-		Versor versor = superposer.getVersor();
+		Quat versor = superposer.getQuaternion();
 
 		double torsion = getFirstEulerAngle(versor);
 
@@ -157,7 +158,7 @@ public class BallsDistanceTorsionVectorizer implements ObjectPairVectorizer {
 		return coordinate;
 	}
 
-	private double getFirstEulerAngle(Versor q) {
+	private double getFirstEulerAngle(Quat q) {
 		double sinr = 2 * (q.w * q.x + q.y * q.z);
 		double cosr = 1 - 2 * (q.x * q.x + q.y * q.y);
 		double roll = Math.atan2(sinr, cosr);
