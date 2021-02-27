@@ -90,12 +90,12 @@ public class AnalyzeOrientations {
 	// old equation, can it be solved geometrically?
 	private void runTheory() {
 		Dataset dataset = new Dataset();
-		Heatmap hm = new Heatmap(0, 0, 2 * Math.PI, 2 * Math.PI / 2, 1000, 1000, colorFile);
+		Heatmap hm = new Heatmap(0, -3.2 / 3, 2 * Math.PI, 3.2 / 3, 950 * 2, 950, colorFile);
 		double maxFast = 0;
-		for (int i = 0; i < 100000; i++) {
-		//for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 10000; i++) {
+			//for (int i = 0; i < 1; i++) {
 			TwoBodies a = new TwoBodies(random, 10, true);
-			TwoBodies b = new TwoBodies(random, 10, false);
+			TwoBodies b = new TwoBodies(random, 10, true);
 			superposer.set(a.getPoints(), b.getPoints());
 
 			//double rmsd = superposer.getRmsd();
@@ -118,7 +118,7 @@ public class AnalyzeOrientations {
 				System.out.println(b);
 				System.out.println("");
 			}*/
-			/*if (rmsd < 0.6 && num > Math.PI  - 0.1) {
+ /*if (rmsd < 0.6 && num > Math.PI  - 0.1) {
 				System.out.println("*");
 			} else {
 				System.out.println("+");

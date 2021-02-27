@@ -11,6 +11,8 @@ import java.util.Random;
 // start generating from coordintes: symetrical x-twist, then rotation by yz vectors
 public class TwoBodies {
 
+	private static AngularDistance angularDistance = new AngularDistance();
+	private static AngularDistanceBackup angularDistanceBackup = new AngularDistanceBackup();
 	//private Random random;
 	//
 	private double torsion;
@@ -21,6 +23,7 @@ public class TwoBodies {
 	private static double sqrt3half = Math.sqrt(3) / 2;
 	private static Point[] triangle = new Point[3];
 	private Quat quaternion1, quaternion2;
+	private double ax, ay, az, aw, bx, by, bz, bw;
 
 	static {
 		triangle[0] = new Point(0, -1, 0);
@@ -46,9 +49,33 @@ public class TwoBodies {
 		return triangle;
 	}
 
-	public TwoBodies(Random random, double distance, boolean zero) {
+	private void set() {
+		ax = quaternion1.x;
+		ay = quaternion1.y;
+		az = quaternion1.z;
+		aw = quaternion1.w;
+		bx = quaternion2.x;
+		by = quaternion2.y;
+		bz = quaternion2.z;
+		bw = quaternion2.w;
 
-		torsion = Math.abs(angle(random));
+	}
+
+	public TwoBodies(Random random, double distance) {
+		quaternion1 = Quat.createVersor(random);
+		quaternion2 = Quat.createVersor(random);
+
+		/*Quat twist = getRotationComponentAboutXConjugated(quaternion1);
+
+		quaternion1 = twist.multiply(quaternion1);
+		quaternion2 = twist.multiply(quaternion2);*/
+		triangle1 = triangle(quaternion1, -distance / 2);
+		triangle2 = triangle(quaternion2, distance / 2);
+		set();
+	}
+
+	public TwoBodies(Random random, double distance, boolean zero) {
+		torsion = 2 * Math.abs(angle(random));
 		yzPlaneAngle1 = angle(random);
 		yzPlaneAngle2 = angle(random);
 		yzRotationAngle1 = angle(random);
@@ -56,7 +83,15 @@ public class TwoBodies {
 		triangle1 = triangle(-torsion / 2, yzPlaneAngle1, yzRotationAngle1, -distance / 2);
 		triangle2 = triangle(torsion / 2, yzPlaneAngle2, yzRotationAngle2, distance / 2);
 
-		/*torsion = Math.PI;//Math.abs(angle(random));
+		/*torsion = 2*Math.abs(angle(random));
+		yzPlaneAngle1 = 0;//angle(random);
+		yzPlaneAngle2 = 0;//angle(random);
+		yzRotationAngle1 = 0;//angle(random);
+		yzRotationAngle2 = 0;//angle(random);
+		triangle1 = triangle(-torsion / 2, yzPlaneAngle1, yzRotationAngle1, -distance / 2);
+		triangle2 = triangle(torsion / 2, yzPlaneAngle2, yzRotationAngle2, distance / 2);*/
+
+ /*torsion = Math.PI;//Math.abs(angle(random));
 		if (zero) {
 			torsion = 0;
 		}
@@ -107,117 +142,136 @@ public class TwoBodies {
 		superposer = new Superposer();
 		superposer.set(triangle, triangle2);
 		quaternion2 = superposer.getQuaternion();
+		set();
+		/*	if (random.nextBoolean()) {
+			quaternion1 = quaternion1.negate();
+		}
+		
+		if (random.nextBoolean()) {
+			quaternion2 = quaternion2.negate();
+		}*/
 
-		/*System.out.println("--- quats");
+ /*System.out.println("--- quats");
 		System.out.println(quaternion1);
 		System.out.println(quaternion2);
 		System.out.println("///");*/
 	}
 
-// why rotation addition does not work without angle halving?
-	public double angularDistance(TwoBodies other) {
-		//Quat ac = other.quaternion1.conjugate().multiply(quaternion1);
-		//Quat bd = other.quaternion2.conjugate().multiply(quaternion2);
-
+	public double angularDistanceBackup(TwoBodies other) {
 		Quat ac = quaternion1.to(other.quaternion1);
 		Quat bd = quaternion2.to(other.quaternion2);
-
-		//b.multiply(conjugate());
-//(-0.7071067811865476, 0.0, 0.0, 0.7071067811865476)
-//(-0.7071067811865476, 3.6755750900592285E-17, -4.983985472295708E-17, 0.7071067811865476)
-		/*System.out.print("ac = ");
-		System.out.println(ac);
-		System.out.print("bd = ");
-		System.out.println(bd);*/
-
-		// probably can be done by having zero twist on ac, prealignement
-		Quat twist = ac.getRotationComponentAboutAxis(new Point(1, 0, 0)).conjugate();
+		Quat twist = getRotationComponentAboutXConjugated(ac);
+		//Quat twist = ac.getRotationComponentAboutAxis(new Point(1, 0, 0)).conjugate();
 		ac = twist.multiply(ac);
 		bd = twist.multiply(bd);
-		/*if (ac.w < 0 || bd.w < 0 || ac.w > 0.1 || bd.w > 0.1) {
-			return 0;
-		}*/
-		/*System.out.print("ac = ");
-		System.out.println(ac);
-		System.out.print("bd = ");
-		System.out.println(bd);*/
 		if (Math.abs(ac.length() - 1) > 0.00001) {
 			throw new RuntimeException();
 		}
 		if (Math.abs(bd.length() - 1) > 0.00001) {
 			throw new RuntimeException();
 		}
-
-		// IDEA
-		// form in which quat vectors share one x-side, x positive
-		// still does not solve it
-		// does this work for angles < 90, can it be forced to work beyond
-		// problem: see values above
-		// TEST - by skipping ac, bd having big angle - still nois
-		// TEST a,b,c,d < 90
 		ac = ac.smallerAngleForm();
 		bd = bd.smallerAngleForm();
 
-		Quat acFull = alignYZ(1, 0, ac);
-		Quat bdFull = alignYZ(1, 0, bd);
-
-		// split into x and yz, halve only yz?
-		// TODO try to double yz arc angle
-		// ALTERNATIVE distance of arcs as if x-rot was cyclical coordinate
-		// verify it has max at 90, smallerAngleForm?
-		// BETTER WAY quat to arc?
 		ac = ac.pow(0.5);
 		bd = bd.pow(0.5);
 
 		ac = ac.smallerAngleForm();
 		bd = bd.smallerAngleForm();
 
-		/*System.out.print("ac2 = ");
-		System.out.println(ac);
-		System.out.print("bd2 = ");
-		System.out.println(bd);*/
-		//bd = alignYZ(ac, bd);
 		ac = alignYZ(1, 0, ac);
 		bd = alignYZ(1, 0, bd);
 
-		/*System.out.print("ac3 = ");
-		System.out.println(ac);
-		System.out.print("bd3 = ");
-		System.out.println(bd);*/
 		Point xArc = ac.rotate(new Point(0, 0, 1));
 		Point yArc = bd.rotate(new Point(0, 0, 1));
 
-		//Point xArcFull = acFull.rotate(new Point(0, 0, 1));
-		//Point yArcFull = bdFull.rotate(new Point(0, 0, 1));
-		//xArc = new Point(xArc.x, xArcFull.y, xArcFull.z);
-		//yArc = new Point(yArc.x, yArcFull.y, yArcFull.z);
-		/*System.out.println("arcs");
-		System.out.println(xArc);
-		System.out.println(yArc);*/
+		if (Math.signum(xArc.x) == Math.signum(yArc.x)) {
+			yArc = new Point(-yArc.x, yArc.y, yArc.z);
+		}
+		double distance = xArc.distance(yArc);
+		return distance;
+	}
+
+	// why rotation addition does not work without angle halving?
+	//TODO another test, initialize triangles by random quat
+	// simplify all procedures
+	// test a lot, think about zero division
+	//????
+	// measure time as is, with rmsd
+	public double angularDistance(TwoBodies other) {
+		//return angularDistance.compute(quaternion1, quaternion2, other.quaternion1, other.quaternion2);
+		return angularDistance.compute(
+			ax, ay, az, aw,
+			bx, by, bz, bw,
+			other.ax, other.ay, other.az, other.aw,
+			other.bx, other.by, other.bz, other.bw
+		);
+	}
+
+	public double angularDistanceOld(TwoBodies other) {
+		return angularDistanceBackup.computeOld(quaternion1, quaternion2, other.quaternion1, other.quaternion2);
+	}
+
+	public double angularDistanceD(TwoBodies other) {
+		Quat ac = quaternion1.to(other.quaternion1);
+		Quat bd = quaternion2.to(other.quaternion2);
+
+		//System.out.println(ac);
+		//System.out.println(bd);
+		double twistSize = Math.sqrt(ac.x * ac.x + ac.w * ac.w);
+		double twistX = -ac.x / twistSize;
+		double twistW = ac.w / twistSize;
+		Point xArc = oneSide(ac, twistX, twistW);
+		Point yArc = oneSide(bd, twistX, twistW);
+
+		//System.out.println(xArc);
+		//System.out.println(yArc);
 		if (Math.signum(xArc.x) == Math.signum(yArc.x)) {
 			yArc = new Point(-yArc.x, yArc.y, yArc.z);
 		}
 
-		/*xArc = new Point(0.5 * xArc.x, xArc.y, xArc.z);
-		yArc = new Point(0.5 * yArc.x, yArc.y, yArc.z);*/
+		double distance = xArc.distance(yArc); // why the shape, is it arcsin?
 
- /*if (Math.signum(ac.x) == Math.signum(bd.x)) {
-			bd = new Quat(-bd.x, bd.y, bd.z, bd.w);
-		}*/
-		//Quat e = bd.conjugate().multiply(ac); // test manually arcs?
-		//return e.w; // =cos(angle of rotation)
-		//return e.getAngle(); // =cos(angle of rotation)
-		//System.out.println("d = " + xArc.distance(yArc));
-		double distance = xArc.distance(yArc);
-		/*System.out.println("distance " + distance);
-		System.out.println(this);
-		System.out.println(other);
-		System.out.println("");*/
+		//System.out.println(distance);
+		//System.exit(0);
 		return distance;
 	}
+
+	private Point oneSide(Quat q, double twistX, double twistW) {
+		double x = twistX * q.w + twistW * q.x;
+		double y = twistW * q.y - twistX * q.z;
+		double z = twistW * q.z + twistX * q.y;
+		double w = twistW * q.w - twistX * q.x;
+		if (w < 0) {
+			x = -x;
+			y = -y;
+			z = -z;
+			w = -w;
+		}
+		w += 1;
+		double yyzz = y * y + z * z;
+		double bSize = Math.sqrt(yyzz);
+		double sizeInvertedSqr = 1 / (x * x + yyzz + w * w);
+		x = x;
+		y = bSize;
+		z = 0;
+		w = w;
+		double wx = w * x;
+		double wy = w * y;
+		Point arc = new Point(
+			(wy + wy) * sizeInvertedSqr,
+			-(wx + wx) * sizeInvertedSqr,
+			(-y * y - x * x + w * w) * sizeInvertedSqr);
+		return arc;
+	}
+
+	public Quat getRotationComponentAboutXConjugated(Quat q) {
+		Quat twist = new Quat(-q.x, 0, 0, q.w).normalize();
+		return twist;
+	}
+
 // TODO numerical solution, minimum? - less confusion by rmsd/angular difference
 	// just rotate other quaternions by all handmade ones, find minimum
-
 	public double angularDistanceNumerical(TwoBodies other) {
 		Quat a = quaternion1;
 		Quat b = quaternion2;
@@ -279,16 +333,16 @@ public class TwoBodies {
 		return cs;
 	}
 
+	// y - real axis, z - imaginary axis
 	private Quat alignYZ(double ay, double az, Quat b) {
-		/*if (ay + b.z < 0.00001 || b.y + b.z < 0.00001) {
-			return b;
-		}*/
-		// y - real axis, z - imaginary axis
 		double aSize = Math.sqrt(ay * ay + az * az);
 		double bSize = Math.sqrt(b.y * b.y + b.z * b.z);
-		if (bSize == 0) {
+		if (aSize < 0.0000001) {
+		}
+		if (bSize < 0.0000001) {
 			return b;
 		}
+
 		double f = bSize / aSize;
 		Quat bAligned = new Quat( // a conjugate, inverts signs
 			b.x,
@@ -296,20 +350,17 @@ public class TwoBodies {
 			az * f,
 			b.w
 		);
-		double bAlignedSize = Math.sqrt(bAligned.y * bAligned.y + bAligned.z * bAligned.z);
-		if (Math.abs(bSize - bAlignedSize) > 0.00001) {
-			throw new RuntimeException();
-		}
-		if (Math.abs(ay / az - bAligned.y / bAligned.z) > 0.00001) { // TODO better test by normalization, signum is ignored
-			throw new RuntimeException(ay + " " + az + "   " + bAligned.y + " " + bAligned.z);
-		}
-		if (Math.abs(ay / aSize - bAligned.y / bSize) > 0.00001) {
-			throw new RuntimeException();
-		}
-		if (Math.abs(az / aSize - bAligned.z / bSize) > 0.00001) {
-			throw new RuntimeException();
-		}
-		//System.out.println(bAligned);
+		return bAligned;
+	}
+
+	private Quat alignY1Z0(Quat b) {
+		double bSize = Math.sqrt(b.y * b.y + b.z * b.z);
+		Quat bAligned = new Quat(
+			b.x,
+			bSize,
+			0,
+			b.w
+		);
 		return bAligned;
 	}
 
@@ -378,6 +429,15 @@ public class TwoBodies {
 			d = 2 * Math.PI - d;
 		}
 		return d;
+	}
+
+	private Point[] triangle(Quat q, double xShift) {
+		Point[] points = new Point[triangle.length];
+		Point shift = new Point(xShift, 0, 0);
+		for (int i = 0; i < triangle.length; i++) {
+			points[i] = q.rotate(triangle[i]).plus(shift);
+		}
+		return points;
 	}
 
 	private Point[] triangle(double torsion, double yzPlaneAngle, double yzRotationAngle, double xShift) {
